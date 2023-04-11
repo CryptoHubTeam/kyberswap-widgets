@@ -61,8 +61,8 @@ export const DialogWrapper = styled.div`
   position: absolute;
   left: 0;
   top: 0;
-  width: calc(100% - 2rem);
-  height: calc(100% - 2rem);
+  width: calc(100%);
+  height: calc(100%);
   padding: 1rem;
   overflow: hidden;
   z-index: ${ZIndex.DIALOG};
@@ -138,10 +138,6 @@ export interface WidgetProps {
   defaultTokenIn?: string
   defaultTokenOut?: string
   feeSetting?: FeeSetting
-  classNames?: {
-    widgetWrapperClass: string
-    dialogWrapperClass: string
-  }
 }
 
 const Widget = ({
@@ -149,16 +145,11 @@ const Widget = ({
   defaultTokenOut,
   feeSetting,
   client,
-  classNames,
 }: {
   defaultTokenIn?: string
   defaultTokenOut?: string
   feeSetting?: FeeSetting
   client: string
-  classNames?: {
-    widgetWrapperClass: string
-    dialogWrapperClass: string
-  }
 }) => {
   const [showModal, setShowModal] = useState<ModalType | null>(null)
   const { chainId } = useActiveWeb3()
@@ -352,15 +343,9 @@ const Widget = ({
     approvalState,
   } = useApproval(trade?.routeSummary?.amountIn || '0', tokenIn, trade?.routerAddress || '')
 
-  const dialogWrapperClassModal = showModal ? 'open' : 'close'
-
-  const dialogWrapperClasses = classNames?.widgetWrapperClass
-    ? `${dialogWrapperClassModal} ${classNames?.widgetWrapperClass}`
-    : dialogWrapperClassModal
-
   return (
-    <Wrapper className={classNames?.widgetWrapperClass}>
-      <DialogWrapper className={dialogWrapperClasses}>
+    <Wrapper>
+      <DialogWrapper className={showModal ? 'open' : 'close'}>
         {showModal !== ModalType.REVIEW && (
           <ModalHeader>
             <ModalTitle
@@ -627,7 +612,6 @@ export default function SwapWidget({
   defaultTokenOut,
   feeSetting,
   client,
-  classNames,
 }: WidgetProps) {
   return (
     <StrictMode>
@@ -639,7 +623,6 @@ export default function SwapWidget({
               defaultTokenOut={defaultTokenOut}
               feeSetting={feeSetting}
               client={client}
-              classNames={classNames}
             />
           </TokenListProvider>
         </Web3Provider>
