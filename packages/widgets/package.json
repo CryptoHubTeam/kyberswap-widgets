@@ -1,7 +1,7 @@
 {
-  "name": "@kyberswap/widgets",
+  "name": "@coinscan/kyberswap-widget",
   "license": "MIT",
-  "version": "1.0.0-rc1",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -20,6 +20,9 @@
     "styled-components": "^5.3.5",
     "vite-plugin-eslint": "^1.8.1",
     "vite-plugin-svgr": "^2.2.1"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
   },
   "devDependencies": {
     "@types/react": "^18.0.17",

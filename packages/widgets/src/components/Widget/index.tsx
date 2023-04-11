@@ -138,6 +138,10 @@ export interface WidgetProps {
   defaultTokenIn?: string
   defaultTokenOut?: string
   feeSetting?: FeeSetting
+  classNames?: {
+    widgetWrapperClass: string
+    dialogWrapperClass: string
+  }
 }
 
 const Widget = ({
@@ -145,11 +149,16 @@ const Widget = ({
   defaultTokenOut,
   feeSetting,
   client,
+  classNames,
 }: {
   defaultTokenIn?: string
   defaultTokenOut?: string
   feeSetting?: FeeSetting
   client: string
+  classNames?: {
+    widgetWrapperClass: string
+    dialogWrapperClass: string
+  }
 }) => {
   const [showModal, setShowModal] = useState<ModalType | null>(null)
   const { chainId } = useActiveWeb3()
@@ -343,9 +352,15 @@ const Widget = ({
     approvalState,
   } = useApproval(trade?.routeSummary?.amountIn || '0', tokenIn, trade?.routerAddress || '')
 
+  const dialogWrapperClassModal = showModal ? 'open' : 'close'
+
+  const dialogWrapperClasses = classNames?.widgetWrapperClass
+    ? `${dialogWrapperClassModal} ${classNames?.widgetWrapperClass}`
+    : dialogWrapperClassModal
+
   return (
-    <Wrapper>
-      <DialogWrapper className={showModal ? 'open' : 'close'}>
+    <Wrapper className={classNames?.widgetWrapperClass}>
+      <DialogWrapper className={dialogWrapperClasses}>
         {showModal !== ModalType.REVIEW && (
           <ModalHeader>
             <ModalTitle
@@ -612,6 +627,7 @@ export default function SwapWidget({
   defaultTokenOut,
   feeSetting,
   client,
+  classNames,
 }: WidgetProps) {
   return (
     <StrictMode>
@@ -623,6 +639,7 @@ export default function SwapWidget({
               defaultTokenOut={defaultTokenOut}
               feeSetting={feeSetting}
               client={client}
+              classNames={classNames}
             />
           </TokenListProvider>
         </Web3Provider>
