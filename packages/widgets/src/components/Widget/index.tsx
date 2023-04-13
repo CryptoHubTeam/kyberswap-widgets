@@ -134,7 +134,6 @@ export interface WidgetProps {
   client: string
   provider?: any
   tokenList?: TokenInfo[]
-  tokenListAggregations?: TokenInfo[]
   theme?: Theme
   defaultTokenIn?: string
   defaultTokenOut?: string
@@ -608,7 +607,6 @@ const Widget = ({
 export default function SwapWidget({
   provider,
   tokenList,
-  tokenListAggregations,
   theme,
   defaultTokenIn,
   defaultTokenOut,
@@ -619,7 +617,7 @@ export default function SwapWidget({
     <StrictMode>
       <ThemeProvider theme={theme || defaultTheme}>
         <Web3Provider provider={provider}>
-          <TokenListProvider tokenList={tokenList} tokenListAggregations={tokenListAggregations}>
+          <TokenListProvider tokenList={tokenList}>
             <Widget
               defaultTokenIn={defaultTokenIn}
               defaultTokenOut={defaultTokenOut}
