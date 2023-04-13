@@ -50,10 +50,24 @@ export const TokenListProvider = ({ tokenList, children }: { tokenList?: TokenIn
     if (typeof window !== 'undefined') localStorage.setItem('importedTokens', JSON.stringify(newTokens))
   }
 
+  const getTokensList = () => {
+    if (!tokenList?.length || tokenList.length === 0) {
+      return DEFAULT_TOKENS[chainId]
+    }
+
+    const fullTokensList: TokenInfo[] = [...DEFAULT_TOKENS[chainId]]
+
+    fullTokensList.unshift(...tokenList)
+
+    const uniqueTokens = [...new Map(fullTokensList.map(t => [t.address, t])).values()]
+
+    return uniqueTokens
+  }
+
   return (
     <TokenContext.Provider
       value={{
-        tokenList: tokenList?.length ? tokenList : DEFAULT_TOKENS[chainId],
+        tokenList: getTokensList(),
         importedTokens,
         addToken,
         removeToken,
