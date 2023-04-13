@@ -18,7 +18,15 @@ const TokenContext = createContext<{
   },
 })
 
-export const TokenListProvider = ({ tokenList, children }: { tokenList?: TokenInfo[]; children: ReactNode }) => {
+export const TokenListProvider = ({
+  tokenList,
+  children,
+  tokenListAggregations,
+}: {
+  tokenList?: TokenInfo[]
+  children: ReactNode
+  tokenListAggregations?: TokenInfo[]
+}) => {
   const { chainId } = useActiveWeb3()
 
   const [importedTokens, setImportedTokens] = useState<TokenInfo[]>(() => {
@@ -50,10 +58,16 @@ export const TokenListProvider = ({ tokenList, children }: { tokenList?: TokenIn
     if (typeof window !== 'undefined') localStorage.setItem('importedTokens', JSON.stringify(newTokens))
   }
 
+  const defaultTokens = DEFAULT_TOKENS[chainId]
+
+  if (tokenListAggregations?.length && tokenListAggregations.length > 0) {
+    defaultTokens.unshift(...tokenListAggregations)
+  }
+
   return (
     <TokenContext.Provider
       value={{
-        tokenList: tokenList?.length ? tokenList : DEFAULT_TOKENS[chainId],
+        tokenList: tokenList?.length ? tokenList : defaultTokens,
         importedTokens,
         addToken,
         removeToken,
