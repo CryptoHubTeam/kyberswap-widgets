@@ -613,14 +613,6 @@ const ethereumTokens = [
   },
   {
     chainId: 1,
-    address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
-    symbol: 'WETH',
-    name: 'Wrapped Ether',
-    decimals: 18,
-    logoURI: 'https://storage.googleapis.com/ks-setting-1d682dca/e82896b2-ebf3-4a5c-bcca-cff1036fd885.png',
-  },
-  {
-    chainId: 1,
     address: '0x0bc529c00C6401aEF6D220BE8C6Ea1667F6Ad93e',
     symbol: 'YFI',
     name: 'yearn finance',

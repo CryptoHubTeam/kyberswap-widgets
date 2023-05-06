@@ -1,16 +1,6 @@
 const velasTokens = [
   {
     chainId: 106,
-    address: '0xc579D1f3CF86749E05CD06f7ADe17856c2CE3126',
-    _scan: 'https://evmexplorer.velas.com/token/0xc579D1f3CF86749E05CD06f7ADe17856c2CE3126',
-    symbol: 'WVLX',
-    name: 'Wrapped VLX',
-    decimals: 18,
-    logoURI:
-      'https://raw.githubusercontent.com/KyberNetwork/dmm-interface/9c1efef2dc1c650adeac5ed7a370cad8e064f6be/src/assets/networks/velas-network.png',
-  },
-  {
-    chainId: 106,
     address: '0xc111c29A988AE0C0087D97b33C6E6766808A3BD3',
     _scan: 'https://evmexplorer.velas.com/token/0xc111c29A988AE0C0087D97b33C6E6766808A3BD3',
     symbol: 'BUSD',

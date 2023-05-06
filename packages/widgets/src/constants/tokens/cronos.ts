@@ -28,15 +28,6 @@ const cronosTokens = [
   },
   {
     chainId: 25,
-    address: '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23',
-    _scan: 'https://cronoscan.com/token/0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23',
-    symbol: 'WCRO',
-    name: 'Wrapped CRO',
-    decimals: 18,
-    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/14532.png',
-  },
-  {
-    chainId: 25,
     address: '0xe6801928061CDbE32AC5AD0634427E140EFd05F9',
     _scan: 'https://cronoscan.com/token/0xe6801928061CDbE32AC5AD0634427E140EFd05F9',
     symbol: 'BIFI',

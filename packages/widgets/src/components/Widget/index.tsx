@@ -152,8 +152,33 @@ const Widget = ({
   client: string
 }) => {
   const [showModal, setShowModal] = useState<ModalType | null>(null)
+
   const { chainId } = useActiveWeb3()
+
   const isUnsupported = !SUPPORTED_NETWORKS.includes(chainId.toString())
+
+  const wrappedTokens: { [chainId: number]: string } = {
+    1: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+    137: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
+    56: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+    43114: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',
+    250: '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83',
+    25: '0x5C7F8A570d578ED84E63fdFA7b1eE72dEae1AE23',
+    42161: '0x82af49447d8a07e3bd95bd0d56f35241523fbab1',
+    199: '0x8D193c6efa90BCFf940A98785d1Ce9D093d3DC8A',
+    106: '0xc579D1f3CF86749E05CD06f7ADe17856c2CE3126',
+    1313161554: '0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d',
+    42262: '0x21C718C22D52d0F3a789b752D4c2fD5908a8A733',
+    10: '0x4200000000000000000000000000000000000006',
+  }
+
+  if (defaultTokenIn === wrappedTokens[chainId]) {
+    defaultTokenIn = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+  }
+
+  if (defaultTokenOut === wrappedTokens[chainId]) {
+    defaultTokenOut = '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE'
+  }
 
   const tokens = useTokens()
   const {

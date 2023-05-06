@@ -325,15 +325,6 @@ const optimismTokens = [
   },
   {
     chainId: 10,
-    address: '0x4200000000000000000000000000000000000006',
-    _scan: 'https://optimistic.etherscan.io/token/0x4200000000000000000000000000000000000006',
-    name: 'Wrapped Ether',
-    symbol: 'WETH',
-    decimals: 18,
-    logoURI: 'https://ethereum-optimism.github.io/data/WETH/logo.png',
-  },
-  {
-    chainId: 10,
     address: '0x7b0bcC23851bBF7601efC9E9FE532Bf5284F65d3',
     _scan: 'https://optimistic.etherscan.io/token/0x7b0bcC23851bBF7601efC9E9FE532Bf5284F65d3',
     name: 'Erica Social Token',

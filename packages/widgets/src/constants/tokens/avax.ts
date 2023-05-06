@@ -58,16 +58,6 @@ const avaxTokens = [
   },
   {
     chainId: 43114,
-    address: '0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',
-    _scan: 'https://snowtrace.io/token/0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7',
-    decimals: 18,
-    name: 'Wrapped AVAX',
-    symbol: 'WAVAX',
-    logoURI:
-      'https://raw.githubusercontent.com/ava-labs/bridge-tokens/main/avalanche-tokens/0xB31f66AA3C1e785363F0875A1B74E27b85FD66c7/logo.png',
-  },
-  {
-    chainId: 43114,
     address: '0xd501281565bf7789224523144Fe5D98e8B28f267',
     _scan: 'https://snowtrace.io/token/0xd501281565bf7789224523144Fe5D98e8B28f267',
     decimals: 18,

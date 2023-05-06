@@ -153,15 +153,6 @@ const fantomTokens = [
     logoURI: 'https://assets.coingecko.com/coins/images/279/large/ethereum.png',
   },
   {
-    name: 'Wrapped FTM',
-    symbol: 'wFTM',
-    address: '0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83',
-    _scan: 'https://ftmscan.com/token/0x21be370D5312f44cB42ce377BC9b8a0cEF1A4C83',
-    chainId: 250,
-    decimals: 18,
-    logoURI: 'https://s2.coinmarketcap.com/static/img/coins/64x64/10240.png',
-  },
-  {
     name: 'yearn.finance',
     symbol: 'YFI',
     address: '0x29b0Da86e484E1C0029B56e817912d778aC0EC69',

@@ -47,15 +47,6 @@ const bnbTokens = [
   },
   {
     chainId: 56,
-    address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-    _scan: 'https://bscscan.com/token/0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-    symbol: 'WBNB',
-    name: 'Wrapped BNB',
-    decimals: 18,
-    logoURI: 'https://assets.coingecko.com/coins/images/12591/small/binance-coin-logo.png',
-  },
-  {
-    chainId: 56,
     address: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
     _scan: 'https://bscscan.com/token/0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
     symbol: 'BUSD',

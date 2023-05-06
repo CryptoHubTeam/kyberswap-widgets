@@ -47,15 +47,6 @@ const polygonTokens = [
   },
   {
     chainId: 137,
-    address: '0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
-    _scan: 'https://polygonscan.com/token/0x0d500B1d8E8eF31E21C99d1Db9A6444d3ADf1270',
-    symbol: 'WMATIC',
-    name: 'Wrapped Matic',
-    decimals: 18,
-    logoURI: 'https://assets.coingecko.com/coins/images/14073/small/matic.png',
-  },
-  {
-    chainId: 137,
     address: '0x3A3e7650f8B9f667dA98F236010fBf44Ee4B2975',
     _scan: 'https://polygonscan.com/token/0x3A3e7650f8B9f667dA98F236010fBf44Ee4B2975',
     symbol: 'XUSD',

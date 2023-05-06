@@ -38,15 +38,6 @@ const bttcTokens = [
   },
   {
     chainId: 199,
-    address: '0x8D193c6efa90BCFf940A98785d1Ce9D093d3DC8A',
-    _scan: 'https://bttcscan.com/token/0x8D193c6efa90BCFf940A98785d1Ce9D093d3DC8A',
-    symbol: 'WBTT',
-    name: 'Wrapped BTT',
-    decimals: 18,
-    logoURI: 'https://coin.top/production/logo/1002000.png',
-  },
-  {
-    chainId: 199,
     address: '0xA20dfb01DCa223c0E52B0D4991D4aFA7E08e3a50',
     _scan: 'https://bttcscan.com/token/0xA20dfb01DCa223c0E52B0D4991D4aFA7E08e3a50',
     symbol: 'ETH_b',

@@ -19,15 +19,6 @@ const oasisTokens = [
   },
   {
     chainId: 42262,
-    address: '0x21C718C22D52d0F3a789b752D4c2fD5908a8A733',
-    _scan: 'https://explorer.emerald.oasis.dev/token/0x21C718C22D52d0F3a789b752D4c2fD5908a8A733',
-    symbol: 'WROSE',
-    name: 'Wrapped ROSE',
-    decimals: 18,
-    logoURI: 'https://docs.oasis.dev/img/logo.png',
-  },
-  {
-    chainId: 42262,
     address: '0x89aF3985261b664a24DE48355D589275b0FE2112',
     _scan: 'https://explorer.emerald.oasis.dev/token/0x89aF3985261b664a24DE48355D589275b0FE2112',
     symbol: 'USBL',

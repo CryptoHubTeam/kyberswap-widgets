@@ -133,8 +133,6 @@ function App() {
     isInBps: true,
   });
 
-  console.log(feeSetting);
-
   return (
     <div className="App">
       <div>

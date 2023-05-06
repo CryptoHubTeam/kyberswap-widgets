@@ -181,16 +181,6 @@ const auroraTokens = [
   },
   {
     chainId: 1313161554,
-    address: '0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d',
-    _scan: 'https://aurorascan.dev/token/0xC42C30aC6Cc15faC9bD938618BcaA1a1FaE8501d',
-    symbol: 'wNEAR',
-    name: 'Wrapped NEAR fungible token',
-    decimals: 24,
-    logoURI: 'https://raw.githubusercontent.com/aurora-is-near/bridge-assets/master/tokens/near.svg',
-    tags: [],
-  },
-  {
-    chainId: 1313161554,
     address: '0x885f8CF6E45bdd3fdcDc644efdcd0AC93880c781',
     _scan: 'https://aurorascan.dev/token/0x885f8CF6E45bdd3fdcDc644efdcd0AC93880c781',
     symbol: 'PAD',

@@ -28,16 +28,6 @@ const arbitrumTokens = [
   },
   {
     chainId: 42161,
-    address: '0x82af49447d8a07e3bd95bd0d56f35241523fbab1',
-    _scan: 'https://arbiscan.io/token/0x82af49447d8a07e3bd95bd0d56f35241523fbab1',
-    symbol: 'WETH',
-    name: 'Wrapped Ether',
-    decimals: 18,
-    logoURI:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2/logo.png',
-  },
-  {
-    chainId: 42161,
     address: '0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f',
     _scan: 'https://arbiscan.io/token/0x2f2a2543b76a4166549f7aab2e75bef0aefc5b0f',
     symbol: 'WBTC',
