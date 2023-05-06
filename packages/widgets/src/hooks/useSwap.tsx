@@ -223,13 +223,13 @@ const useSwap = ({
       },
     )
       .then(r => r.json())
-      .catch(() => setError('Unable found trade route'))
+      .catch(() => setError('Unable to found trade route'))
 
-    if (!routeResponse.data.routeSummary) {
-      setError('Unable found trade route')
+    if (!routeResponse?.data?.routeSummary) {
+      setError('Unable to found trade route')
     }
 
-    if (Number(routeResponse.data?.routeSummary?.amountOut)) {
+    if (Number(routeResponse?.data?.routeSummary?.amountOut)) {
       setTrade(routeResponse.data)
       if (provider && !tokenInBalance.lt(amountIn)) setError('')
     } else {
