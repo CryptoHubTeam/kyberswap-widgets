@@ -62,7 +62,7 @@ const TokenSymbol = styled.div`
 const AddressRow = styled.div`
   display: flex;
   align-items: center;
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 8px;
   gap: 4px;
   a {

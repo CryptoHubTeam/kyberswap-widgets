@@ -42,7 +42,7 @@ const Flex = styled.div`
 
 const Note = styled.div`
   color: ${({ theme }) => theme.subText};
-  font-size: 0.75rem;
+  font-size: 14px;
   text-align: left;
 `
 
@@ -53,7 +53,7 @@ const PriceImpactHigh = styled.div`
   border-radius: ${({ theme }) => theme.buttonRadius};
   background: ${({ theme }) => theme.warning + '40'};
   color: ${({ theme }) => theme.warning};
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500px;
   padding: 12px;
 `
@@ -119,13 +119,13 @@ const Amount = styled.div`
 `
 
 const SubText = styled.div`
-  font-size: 12px;
+  font-size: 14px;
   color: ${({ theme }) => theme.subText};
   margin-top: 12px;
 `
 
 const ErrMsg = styled.div`
-  font-size: 12px;
+  font-size: 14px;
   color: ${({ theme }) => theme.subText};
   max-height: 200px;
   overflow-wrap: break-word;

@@ -2088,6 +2088,21 @@
     "@jridgewell/resolve-uri" "3.1.0"
     "@jridgewell/sourcemap-codec" "1.4.14"
 
+"@kyberswap/widgets@1.0.0-rc1":
+  version "1.0.0-rc1"
+  resolved "https://registry.yarnpkg.com/@kyberswap/widgets/-/widgets-1.0.0-rc1.tgz#c573c5e25641c07107e62884acc8a48a666e2049"
+  integrity sha512-f2q3khiN0OAJTDD3wXpRoN8vacS2Cj2oOsoinFsY0L6P7afMkqZ2JaqOYJ17Srou/q+9KXdJk9Njt3XZpkRhKQ==
+  dependencies:
+    "@popperjs/core" "^2.11.6"
+    "@reach/portal" "^0.18.0"
+    eslint-plugin-better-styled-components "^1.1.2"
+    ethers "^5.7.0"
+    react "^18.2.0"
+    react-dom "^18.2.0"
+    react-popper "^2.3.0"
+    styled-components "^5.3.5"
+    vite-plugin-svgr "^2.2.1"
+
 "@lerna/add@6.3.0":
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/@lerna/add/-/add-6.3.0.tgz#4ff2b34298ff97f4d015b091441874efc1e95964"

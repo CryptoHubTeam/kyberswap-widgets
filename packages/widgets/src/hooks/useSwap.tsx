@@ -102,7 +102,9 @@ const useSwap = ({
       if (isUnsupported) return
       const res = await fetch(
         `https://ks-setting.kyberswap.com/api/v1/dexes?chain=${AGGREGATOR_PATH[chainId]}&isEnabled=true&pageSize=100`,
-      ).then(res => res.json())
+      )
+        .then(res => res.json())
+        .catch(() => setError('Unable found dex pair'))
 
       let dexes: Dex[] = res?.data?.dexes || []
       const ksElastic = dexes.find(dex => dex.dexId === 'kyberswapv2')
@@ -219,7 +221,9 @@ const useSwap = ({
       {
         signal: controllerRef.current?.signal,
       },
-    ).then(r => r.json())
+    )
+      .then(r => r.json())
+      .catch(() => setError('Unable found trade route'))
 
     if (Number(routeResponse.data.routeSummary?.amountOut)) {
       setTrade(routeResponse.data)
@@ -232,17 +236,19 @@ const useSwap = ({
     controllerRef.current = null
     setLoading(false)
   }, [
-    tokenIn,
-    tokenOut,
-    provider,
-    debouncedInput,
-    dexes,
     isUnsupported,
-    chainId,
+    tokenIn,
+    tokens,
+    tokenOut,
+    debouncedInput,
+    balances,
+    provider,
+    dexes,
     chargeFeeBy,
     feeAmount,
     isInBps,
     feeReceiver,
+    chainId,
   ])
 
   useEffect(() => {

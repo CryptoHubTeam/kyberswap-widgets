@@ -65,7 +65,7 @@ const LiquiditySourceHeader = styled.div`
   border-top-left-radius: 8px;
   background: ${({ theme }) => theme.secondary};
   text-transform: uppercase;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   padding: 12px;
   color: ${({ theme }) => theme.subText};

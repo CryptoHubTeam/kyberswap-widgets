@@ -7,7 +7,7 @@ import { ReactComponent as AlertIcon } from '../assets/alert.svg'
 import InfoHelper from './InfoHelper'
 
 const Label = styled.div`
-  font-size: 0.75rem;
+  font-size: 14px;
   text-align: left;
 `
 
@@ -18,7 +18,7 @@ const Input = styled.input<{ isActive: boolean }>`
   color: ${({ theme }) => theme.text};
   text-align: right;
   width: 100%;
-  font-size: 12px;
+  font-size: 14px;
   padding: 0;
 
   :focus {
@@ -38,7 +38,7 @@ const SlippageItem = styled.div<{ isActive: boolean }>`
   position: relative;
   border-radius: 999px;
   color: ${({ theme, isActive }) => (isActive ? theme.text : theme.subText)};
-  font-size: 12px;
+  font-size: 14px;
   padding: 4px;
   font-weight: 500;
   flex: 2;
@@ -69,7 +69,7 @@ const TTLInput = styled.div`
   border-radius: 999px;
   background: ${({ theme }) => theme.secondary};
   color: ${({ theme }) => theme.text};
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   text-align: right;
 

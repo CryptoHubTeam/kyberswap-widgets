@@ -77,7 +77,7 @@ const SpinWrapper = styled.div`
 `
 
 const CountDown = styled.div`
-  font-size: 0.75rem;
+  font-size: 14px;
   font-weight: 500;
   position: absolute;
   margin-left: auto;

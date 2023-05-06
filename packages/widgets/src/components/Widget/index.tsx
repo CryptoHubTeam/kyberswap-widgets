@@ -108,7 +108,7 @@ const PoweredBy = styled.div`
   justify-content: center;
   gap: 8px;
   color: ${({ theme }) => theme.subText};
-  font-size: 12px;
+  font-size: 14px;
   margin-top: 1rem;
 `
 
@@ -366,7 +366,7 @@ const Widget = ({
         </PoweredBy>
       </DialogWrapper>
       <Title>
-        Swap
+        SWAP
         <SettingBtn onClick={() => setShowModal(ModalType.SETTING)}>
           <SettingIcon />
         </SettingBtn>

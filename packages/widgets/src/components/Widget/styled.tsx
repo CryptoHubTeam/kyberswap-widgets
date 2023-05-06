@@ -34,7 +34,7 @@ export const MaxHalfBtn = styled.button`
   background: ${({ theme }) => theme.interactive};
   border-radius: ${({ theme }) => theme.buttonRadius};
   color: ${({ theme }) => theme.subText};
-  font-size: 0.75rem;
+  font-size: 14px;
   padding: 0.125rem 0.5rem;
   font-weight: 500;
   cursor: pointer;
@@ -88,7 +88,7 @@ export const AccountBalance = styled.div`
   gap: 4px;
   display: flex;
   align-items: center;
-  font-size: 0.75rem;
+  font-size: 14px;
   color: ${({ theme }) => theme.subText};
 `
 
@@ -206,7 +206,7 @@ export const Detail = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
-  font-size: 12px;
+  font-size: 14px;
 `
 
 export const DetailRow = styled.div`
@@ -223,7 +223,7 @@ export const DetailRight = styled.div`
 `
 
 export const DetailTitle = styled.div`
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   text-transform: uppercase;
   text-align: left;

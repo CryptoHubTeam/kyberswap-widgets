@@ -44,7 +44,7 @@ const Spinner = styled(Loading)`
 `
 
 export const Input = styled.input`
-  font-size: 0.75rem;
+  font-size: 14px;
   padding: 0.75rem;
   border-radius: ${({ theme }) => theme.borderRadius};
   background: ${({ theme }) => theme.secondary};
@@ -103,7 +103,7 @@ const TokenInfo = styled.div`
 
 const TokenName = styled.div`
   color: ${({ theme }) => theme.subText};
-  font-size: 0.75rem;
+  font-size: 14px;
 `
 
 const TokenBalance = styled.div`
