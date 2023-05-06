@@ -235,13 +235,12 @@ const useSwap = ({
 
     controllerRef.current = null
     setLoading(false)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     isUnsupported,
     tokenIn,
-    tokens,
     tokenOut,
     debouncedInput,
-    balances,
     provider,
     dexes,
     chargeFeeBy,

@@ -6,13 +6,13 @@ import { NATIVE_TOKEN_ADDRESS } from '../constants'
 import { useActiveWeb3 } from './useWeb3Provider'
 
 const useTokenBalances = (tokenAddresses: string[]) => {
-  const { provider } = useActiveWeb3()
+  const { provider, chainId } = useActiveWeb3()
   const multicallContract = useMulticalContract()
   const [balances, setBalances] = useState<{ [address: string]: BigNumber }>({})
   const [loading, setLoading] = useState(false)
 
   const fetchBalances = useCallback(async () => {
-    if (!provider) {
+    if (!provider || !chainId) {
       setBalances({})
       return
     }
@@ -48,7 +48,7 @@ const useTokenBalances = (tokenAddresses: string[]) => {
     } catch (e) {
       setLoading(false)
     }
-  }, [provider, tokenAddresses, multicallContract?.callStatic])
+  }, [provider, tokenAddresses, chainId, multicallContract?.callStatic])
 
   useEffect(() => {
     fetchBalances()
