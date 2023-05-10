@@ -1172,6 +1172,22 @@
     "@babel/helper-validator-identifier" "^7.19.1"
     to-fast-properties "^2.0.0"
 
+"@cryptohubltd/kyberswap-widget@1.0.13":
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/@cryptohubltd/kyberswap-widget/-/kyberswap-widget-1.0.13.tgz#21268cc34916e6b51edc57bf6948c04382ad78ba"
+  integrity sha512-oe3bU6npQ1oUzfrq3v2ckC2hqOqhn4IOnt1NzgURu+4w9DV6QBJ7Cj5bF5U5aoQ3RUkcL/TTGyyDv9J7MTnMPg==
+  dependencies:
+    "@popperjs/core" "^2.11.6"
+    "@reach/portal" "^0.18.0"
+    eslint-plugin-better-styled-components "^1.1.2"
+    ethers "^5.7.0"
+    react "^18.2.0"
+    react-dom "^18.2.0"
+    react-popper "^2.3.0"
+    styled-components "^5.3.5"
+    vite-plugin-eslint "^1.8.1"
+    vite-plugin-svgr "^2.2.1"
+
 "@emotion/is-prop-valid@^1.1.0":
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@emotion/is-prop-valid/-/is-prop-valid-1.2.0.tgz#7f2d35c97891669f7e276eb71c83376a5dc44c83"

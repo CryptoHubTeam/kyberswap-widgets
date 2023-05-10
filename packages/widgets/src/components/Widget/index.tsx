@@ -396,11 +396,11 @@ const Widget = ({
           <SettingIcon />
         </SettingBtn>
       </Title>
-      <InputWrapper>
+      <InputWrapper style={{ marginTop: '0.5rem' }}>
         <BalanceRow>
           <div>
             <MaxHalfBtn onClick={() => setInputAmount(tokenInWithUnit)}>Max</MaxHalfBtn>
-            {/* <MaxHalfBtn>Half</MaxHalfBtn> */}
+            <MaxHalfBtn onClick={() => setInputAmount((parseFloat(tokenInWithUnit) / 2).toString())}>Half</MaxHalfBtn>
           </div>
           <AccountBalance>
             <WalletIcon />
@@ -556,6 +556,36 @@ const Widget = ({
         </InputRow>
       </InputWrapper>
 
+      <Button
+        disabled={!!error || loading || checkingAllowance || approvalState === APPROVAL_STATE.PENDING || isUnsupported}
+        onClick={async () => {
+          if (approvalState === APPROVAL_STATE.NOT_APPROVED) {
+            approve()
+          } else {
+            setShowModal(ModalType.REVIEW)
+          }
+        }}
+      >
+        {isUnsupported ? (
+          <PoweredBy style={{ fontSize: '16px', marginTop: '0' }}>
+            <AlertIcon style={{ width: '24px', height: '24px' }} />
+            Unsupported network
+          </PoweredBy>
+        ) : loading ? (
+          <Dots>Calculate best route</Dots>
+        ) : error ? (
+          error
+        ) : checkingAllowance ? (
+          <Dots>Checking Allowance</Dots>
+        ) : approvalState === APPROVAL_STATE.NOT_APPROVED ? (
+          'Approve'
+        ) : approvalState === APPROVAL_STATE.PENDING ? (
+          <Dots>Approving</Dots>
+        ) : (
+          'Swap'
+        )}
+      </Button>
+
       <Detail style={{ marginTop: '1rem' }}>
         <DetailTitle>More information</DetailTitle>
         <Divider />
@@ -590,36 +620,6 @@ const Widget = ({
           </DetailRight>
         </DetailRow>
       </Detail>
-
-      <Button
-        disabled={!!error || loading || checkingAllowance || approvalState === APPROVAL_STATE.PENDING || isUnsupported}
-        onClick={async () => {
-          if (approvalState === APPROVAL_STATE.NOT_APPROVED) {
-            approve()
-          } else {
-            setShowModal(ModalType.REVIEW)
-          }
-        }}
-      >
-        {isUnsupported ? (
-          <PoweredBy style={{ fontSize: '16px', marginTop: '0' }}>
-            <AlertIcon style={{ width: '24px', height: '24px' }} />
-            Unsupported network
-          </PoweredBy>
-        ) : loading ? (
-          <Dots>Calculate best route</Dots>
-        ) : error ? (
-          error
-        ) : checkingAllowance ? (
-          <Dots>Checking Allowance</Dots>
-        ) : approvalState === APPROVAL_STATE.NOT_APPROVED ? (
-          'Approve'
-        ) : approvalState === APPROVAL_STATE.PENDING ? (
-          <Dots>Approving</Dots>
-        ) : (
-          'Swap'
-        )}
-      </Button>
 
       <PoweredBy>
         Powered By

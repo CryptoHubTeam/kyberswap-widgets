@@ -31,11 +31,11 @@ export const InputWrapper = styled.div`
 export const MaxHalfBtn = styled.button`
   outline: none;
   border: none;
-  background: ${({ theme }) => theme.interactive};
+  background: ${({ theme }) => theme.primary};
   border-radius: ${({ theme }) => theme.buttonRadius};
   color: ${({ theme }) => theme.subText};
   font-size: 14px;
-  padding: 0.125rem 0.5rem;
+  padding: 0.2rem 0.75rem;
   font-weight: 500;
   cursor: pointer;
   margin-right: 0.25rem;
@@ -75,8 +75,6 @@ export const SettingBtn = styled.button`
 `
 
 export const SwitchBtn = styled(SettingBtn)`
-  width: 40px;
-  height: 40px;
   background: ${({ theme }) => theme.secondary};
 
   :hover {

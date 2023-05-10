@@ -76,18 +76,6 @@ const SpinWrapper = styled.div`
   cursor: pointer;
 `
 
-const CountDown = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-  position: absolute;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
-  text-align: center;
-  color: ${({ theme }) => theme.accent};
-`
-
 interface Props {
   loading: boolean
   onRefresh: () => void
@@ -121,8 +109,6 @@ function RefreshBtn({ trade, onRefresh, loading }: Props) {
   return (
     <SpinWrapper role="button" onClick={onRefresh}>
       <Spin spinning={loading} countdown={countdown} />
-
-      {!!countdown && !loading && <CountDown>{(countdown / 1_000).toFixed()}</CountDown>}
     </SpinWrapper>
   )
 }
