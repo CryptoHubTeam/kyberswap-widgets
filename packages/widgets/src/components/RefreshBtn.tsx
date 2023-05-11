@@ -33,8 +33,8 @@ const Spin = ({ spinning, countdown }: { spinning: boolean; countdown?: number }
       xmlns="http://www.w3.org/2000/svg"
       color={theme.accent}
       viewBox="2 2 20 20"
-      width="32"
-      height="32"
+      width="16"
+      height="16"
     >
       <path
         stroke="none"

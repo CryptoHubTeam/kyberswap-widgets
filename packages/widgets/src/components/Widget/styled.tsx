@@ -55,8 +55,8 @@ export const SettingBtn = styled.button`
   outline: none;
   border: none;
   border-radius: ${({ theme }) => theme.buttonRadius};
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2rem;
+  height: 2rem;
   background: transparent;
   cursor: pointer;
   display: flex;
@@ -70,13 +70,11 @@ export const SettingBtn = styled.button`
 
   svg {
     width: 1.25rem;
-    height: 1.25rem;
   }
 `
 
 export const SwitchBtn = styled(SettingBtn)`
   background: ${({ theme }) => theme.secondary};
-
   :hover {
     opacity: 0.8;
   }
@@ -155,9 +153,9 @@ export const Button = styled.button`
 
   :disabled {
     color: ${({ theme }) => theme.subText};
-    background: ${({ theme }) => theme.interactive};
+    background: ${({ theme }) => theme.accent};
     cursor: not-allowed;
-
+    opacity: 0.4;
     :active {
       transform: none;
     }
@@ -194,6 +192,7 @@ export const Rate = styled.div`
   font-weight: 500;
   color: ${({ theme }) => theme.subText};
   margin-left: 4px;
+  height: 16px;
 `
 
 export const Detail = styled.div`

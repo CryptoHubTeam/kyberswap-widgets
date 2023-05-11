@@ -1,7 +1,6 @@
 import { StrictMode, useState } from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 import { defaultTheme, Theme } from '../../theme'
-import { ReactComponent as SettingIcon } from '../../assets/setting.svg'
 import { ReactComponent as WalletIcon } from '../../assets/wallet.svg'
 import { ReactComponent as DropdownIcon } from '../../assets/dropdown.svg'
 import { ReactComponent as SwitchIcon } from '../../assets/switch.svg'
@@ -47,7 +46,6 @@ import useSwap from '../../hooks/useSwap'
 import useTokenBalances from '../../hooks/useTokenBalances'
 import { formatUnits } from 'ethers/lib/utils'
 import useApproval, { APPROVAL_STATE } from '../../hooks/useApproval'
-import Settings from '../Settings'
 import { TokenListProvider, useTokens } from '../../hooks/useTokens'
 import RefreshBtn from '../RefreshBtn'
 import Confirmation from '../Confirmation'
@@ -112,8 +110,68 @@ const PoweredBy = styled.div`
   margin-top: 1rem;
 `
 
+const SlippageInput = styled.input<{ isActive: boolean }>`
+  background: ${({ theme, isActive }) => (isActive ? theme.dialog : theme.secondary)};
+  border: none;
+  outline: none;
+  color: ${({ theme }) => theme.text};
+  text-align: right;
+  width: 100%;
+  font-size: 14px;
+  padding: 0;
+
+  :focus {
+    background: ${({ theme }) => theme.dialog};
+  }
+`
+
+const SlippageWrapper = styled.div<{ isHidden: boolean }>`
+  border-radius: 999px;
+  margin-top: 8px;
+  background: ${({ theme }) => theme.secondary};
+  padding: 2px;
+  display: flex;
+  display: ${({ isHidden }) => (isHidden ? 'none' : '')};
+`
+
+const SlippageItem = styled.div<{ isActive: boolean }>`
+  position: relative;
+  border-radius: 999px;
+  color: ${({ theme, isActive }) => (isActive ? theme.text : theme.subText)};
+  font-size: 14px;
+  padding: 4px;
+  font-weight: 500;
+  flex: 2;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: center;
+  background: ${({ theme, isActive }) => (isActive ? theme.dialog : theme.secondary)};
+  cursor: pointer;
+  :hover {
+    background: ${({ theme }) => theme.dialog};
+    input {
+      background: ${({ theme }) => theme.dialog};
+    }
+  }
+`
+
+const SlippageContainer = styled.div`
+  margin-top: 1rem;
+`
+
+export const CurrentSlippageButton = styled(SettingBtn)`
+  background: ${({ theme }) => theme.secondary};
+  width: 4rem;
+  height: 2rem;
+  margin-left: 0.5rem;
+  margin-right: 0.4rem;
+  :hover {
+    opacity: 0.8;
+  }
+`
+
 enum ModalType {
-  SETTING = 'setting',
   CURRENCY_IN = 'currency_in',
   CURRENCY_OUT = 'currency_out',
   REVIEW = 'review',
@@ -128,6 +186,63 @@ interface FeeSetting {
   // 10 means 0.1%
   feeAmount: number
   isInBps: boolean
+}
+
+const BPS = 10_000
+
+const MAX_SLIPPAGE_IN_BIPS = 2_000
+
+const parseSlippageInput = (str: string): number => Math.round(Number.parseFloat(str) * 100)
+
+const validateSlippageInput = (str: string): { isValid: boolean; message?: string } => {
+  if (str === '') {
+    return {
+      isValid: true,
+    }
+  }
+
+  const numberRegex = /^\s*([0-9]+)(\.\d+)?\s*$/
+  if (!str.match(numberRegex)) {
+    return {
+      isValid: false,
+      message: `Enter a valid slippage percentage`,
+    }
+  }
+
+  const rawSlippage = parseSlippageInput(str)
+
+  if (Number.isNaN(rawSlippage)) {
+    return {
+      isValid: false,
+      message: `Enter a valid slippage percentage`,
+    }
+  }
+
+  if (rawSlippage < 0) {
+    return {
+      isValid: false,
+      message: `Enter a valid slippage percentage`,
+    }
+  } else if (rawSlippage < 50) {
+    return {
+      isValid: true,
+      message: `Your transaction may fail`,
+    }
+  } else if (rawSlippage > MAX_SLIPPAGE_IN_BIPS) {
+    return {
+      isValid: false,
+      message: `Enter a smaller slippage percentage`,
+    }
+  } else if (rawSlippage > 500) {
+    return {
+      isValid: true,
+      message: `Your transaction may be frontrun`,
+    }
+  }
+
+  return {
+    isValid: true,
+  }
 }
 
 export interface WidgetProps {
@@ -195,7 +310,6 @@ const Widget = ({
     setSlippage,
     getRate,
     deadline,
-    setDeadline,
     allDexes,
     excludedDexes,
     setExcludedDexes,
@@ -249,41 +363,11 @@ const Widget = ({
     ? -1
     : (+trade.routeSummary.amountInUsd - +trade.routeSummary.amountOutUsd * 100) / +trade.routeSummary.amountInUsd
 
-  const modalTitle = (() => {
-    switch (showModal) {
-      case ModalType.SETTING:
-        return 'Settings'
-      case ModalType.CURRENCY_IN:
-        return 'Select a token'
-      case ModalType.CURRENCY_OUT:
-        return 'Select a token'
-      case ModalType.DEXES_SETTING:
-        return 'Liquidity Sources'
-      case ModalType.IMPORT_TOKEN:
-        return 'Import Token'
-
-      default:
-        return null
-    }
-  })()
-
   const [tokenToImport, setTokenToImport] = useState<TokenInfo | null>(null)
   const [importType, setImportType] = useState<'in' | 'out'>('in')
 
   const modalContent = (() => {
     switch (showModal) {
-      case ModalType.SETTING:
-        return (
-          <Settings
-            slippage={slippage}
-            setSlippage={setSlippage}
-            deadline={deadline}
-            setDeadline={setDeadline}
-            allDexes={allDexes}
-            excludedDexes={excludedDexes}
-            onShowSource={() => setShowModal(ModalType.DEXES_SETTING)}
-          />
-        )
       case ModalType.CURRENCY_IN:
         return (
           <SelectCurrency
@@ -368,17 +452,43 @@ const Widget = ({
     approvalState,
   } = useApproval(trade?.routeSummary?.amountIn || '0', tokenIn, trade?.routerAddress || '')
 
+  const [slippageValue, setSlippageValue] = useState(() => {
+    return ((slippage * 100) / BPS).toString()
+  })
+
+  const [isFocus, setIsFocus] = useState(false)
+
+  const { isValid, message } = validateSlippageInput(slippageValue)
+
+  const [isSlippageShown, setSlippageShown] = useState(false)
+
+  const modalTitle = (() => {
+    switch (showModal) {
+      case ModalType.CURRENCY_IN:
+        return 'Select a token'
+      case ModalType.CURRENCY_OUT:
+        return 'Select a token'
+      case ModalType.DEXES_SETTING:
+        return 'Liquidity Sources'
+      case ModalType.IMPORT_TOKEN:
+        return 'Import Token'
+
+      default:
+        return null
+    }
+  })()
+
+  const setSlippageFinalValue = (slippage: number) => {
+    setSlippage(slippage)
+    setSlippageValue((slippage / 100).toString())
+  }
+
   return (
     <Wrapper>
       <DialogWrapper className={showModal ? 'open' : 'close'}>
         {showModal !== ModalType.REVIEW && (
           <ModalHeader>
-            <ModalTitle
-              onClick={() =>
-                showModal === ModalType.DEXES_SETTING ? setShowModal(ModalType.SETTING) : setShowModal(null)
-              }
-              role="button"
-            >
+            <ModalTitle onClick={() => setShowModal(null)} role="button">
               <BackIcon style={{ color: theme.subText }} />
               {modalTitle}
             </ModalTitle>
@@ -390,12 +500,7 @@ const Widget = ({
           <KyberSwapLogo />
         </PoweredBy>
       </DialogWrapper>
-      <Title>
-        SWAP
-        <SettingBtn onClick={() => setShowModal(ModalType.SETTING)}>
-          <SettingIcon />
-        </SettingBtn>
-      </Title>
+      <Title>SWAP</Title>
       <InputWrapper style={{ marginTop: '0.5rem' }}>
         <BalanceRow>
           <div>
@@ -488,7 +593,7 @@ const Widget = ({
           </Rate>
 
           {!!rate && (
-            <SettingBtn onClick={() => setInverseRate(prev => !prev)}>
+            <SettingBtn onClick={() => setInverseRate(prev => !prev)} style={{ marginLeft: '0.4rem' }}>
               <SwapIcon />
             </SettingBtn>
           )}
@@ -555,6 +660,86 @@ const Widget = ({
           </SelectTokenBtn>
         </InputRow>
       </InputWrapper>
+
+      <SlippageContainer>
+        <MiddleRow>
+          <MiddleLeft>
+            Max Slippage:
+            <CurrentSlippageButton onClick={() => setSlippageShown(!isSlippageShown)}>
+              {slippageValue + '%'}
+            </CurrentSlippageButton>
+            <InfoHelper
+              color={theme.text}
+              text={`Transaction will revert if there is an adverse rate change that is higher than this %`}
+            />
+          </MiddleLeft>
+        </MiddleRow>
+        <SlippageWrapper isHidden={!isSlippageShown}>
+          <SlippageItem isActive={slippage === 5} onClick={() => setSlippageFinalValue(5)}>
+            0.05%
+          </SlippageItem>
+          <SlippageItem isActive={slippage === 10} onClick={() => setSlippageFinalValue(10)}>
+            0.1%
+          </SlippageItem>
+          <SlippageItem isActive={slippage === 50} onClick={() => setSlippageFinalValue(50)}>
+            0.5%
+          </SlippageItem>
+          <SlippageItem isActive={slippage === 100} onClick={() => setSlippageFinalValue(100)}>
+            1%
+          </SlippageItem>
+          <SlippageItem
+            isActive
+            style={{
+              background: isFocus ? theme.dialog : undefined,
+              border: message ? (isValid ? `1px solid ${theme.warning}` : `1px solid ${theme.error}`) : undefined,
+            }}
+          >
+            {message && (
+              <AlertIcon
+                style={{
+                  position: 'absolute',
+                  left: 4,
+                  width: 20,
+                  color: isValid ? theme.warning : theme.error,
+                }}
+              />
+            )}
+            <SlippageInput
+              isActive
+              placeholder="Custom"
+              onFocus={() => setIsFocus(true)}
+              onBlur={() => setIsFocus(false)}
+              value={slippageValue}
+              onChange={e => {
+                let slippage = e.target.value
+
+                if (slippage === '') {
+                  slippage = '0'
+                }
+
+                const valid = validateSlippageInput(slippage)
+
+                if (valid.isValid) {
+                  setSlippageFinalValue(parseSlippageInput(slippage))
+                }
+              }}
+            />
+            <span style={{ height: '16px' }}>%</span>
+          </SlippageItem>
+        </SlippageWrapper>
+        {message && (
+          <div
+            style={{
+              fontSize: '12px',
+              color: isValid ? theme.warning : theme.error,
+              textAlign: 'left',
+              marginTop: '4px',
+            }}
+          >
+            {message}
+          </div>
+        )}
+      </SlippageContainer>
 
       <Button
         disabled={!!error || loading || checkingAllowance || approvalState === APPROVAL_STATE.PENDING || isUnsupported}
