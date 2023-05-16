@@ -175,7 +175,7 @@ export const CurrentSlippageButton = styled(SettingBtn)`
 enum ModalType {
   CURRENCY_IN = 'currency_in',
   CURRENCY_OUT = 'currency_out',
-  REVIEW = 'review',
+  CONFIRMATION = 'confirmation',
   DEXES_SETTING = 'dexes_setting',
   IMPORT_TOKEN = 'import_token',
 }
@@ -401,7 +401,7 @@ const Widget = ({
             }}
           />
         )
-      case ModalType.REVIEW:
+      case ModalType.CONFIRMATION:
         if (rate && tokenInInfo && trade && tokenOutInfo)
           return (
             <Confirmation
@@ -487,7 +487,7 @@ const Widget = ({
   return (
     <Wrapper>
       <DialogWrapper className={showModal ? 'open' : 'close'}>
-        {showModal !== ModalType.REVIEW && (
+        {showModal !== ModalType.CONFIRMATION && (
           <ModalHeader>
             <ModalTitle onClick={() => setShowModal(null)} role="button">
               <BackIcon style={{ color: theme.subText }} />
@@ -752,7 +752,7 @@ const Widget = ({
           if (approvalState === APPROVAL_STATE.NOT_APPROVED) {
             approve()
           } else {
-            setShowModal(ModalType.REVIEW)
+            setShowModal(ModalType.CONFIRMATION)
           }
         }}
       >

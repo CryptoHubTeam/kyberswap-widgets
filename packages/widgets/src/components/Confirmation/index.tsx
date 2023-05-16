@@ -1,10 +1,8 @@
 import styled, { keyframes } from 'styled-components'
 import { Trade } from '../../hooks/useSwap'
-import { ReactComponent as Warning } from '../../assets/warning.svg'
-import { Button, Detail, DetailLabel, DetailRight, DetailRow, ModalHeader, ModalTitle } from '../Widget/styled'
-import useTheme from '../../hooks/useTheme'
+import { Button } from '../Widget/styled'
 import { useActiveWeb3 } from '../../hooks/useWeb3Provider'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { BigNumber } from 'ethers'
 import { AGGREGATOR_PATH, NATIVE_TOKEN_ADDRESS, SCAN_LINK, TokenInfo } from '../../constants'
 import { ReactComponent as BackIcon } from '../../assets/back.svg'
@@ -13,54 +11,12 @@ import { ReactComponent as External } from '../../assets/external.svg'
 import { ReactComponent as SuccessSVG } from '../../assets/success.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/error.svg'
 import { ReactComponent as Info } from '../../assets/info.svg'
-import InfoHelper from '../InfoHelper'
-import { formatNumber } from '../../utils'
 
 const Success = styled(SuccessSVG)`
   color: ${({ theme }) => theme.success};
 `
 
 const StyledError = styled(ErrorIcon)`
-  color: ${({ theme }) => theme.error};
-`
-
-const ArrowDown = styled(BackIcon)`
-  color: ${({ theme }) => theme.subText};
-  transform: rotate(-90deg);
-`
-
-const Flex = styled.div`
-  display: flex;
-  font-size: 1.5rem;
-  gap: 0.5rem;
-  align-items: center;
-  font-weight: 500;
-
-  img {
-    border-radius: 50%;
-  }
-`
-
-const Note = styled.div`
-  color: ${({ theme }) => theme.subText};
-  font-size: 14px;
-  text-align: left;
-`
-
-const PriceImpactHigh = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  border-radius: ${({ theme }) => theme.buttonRadius};
-  background: ${({ theme }) => theme.warning + '40'};
-  color: ${({ theme }) => theme.warning};
-  font-size: 14px;
-  font-weight: 500px;
-  padding: 12px;
-`
-
-const PriceImpactVeryHigh = styled(PriceImpactHigh)`
-  background: ${({ theme }) => theme.error + '40'};
   color: ${({ theme }) => theme.error};
 `
 
@@ -166,14 +122,6 @@ function Confirmation({
   deadline: number
   client: string
 }) {
-  const theme = useTheme()
-
-  let minAmountOut = '--'
-
-  if (amountOut) {
-    minAmountOut = (Number(amountOut) * (1 - slippage / 10_000)).toPrecision(8).toString()
-  }
-
   const { provider, account, chainId } = useActiveWeb3()
   const [attempTx, setAttempTx] = useState(false)
   const [txHash, setTxHash] = useState('')
@@ -203,7 +151,7 @@ function Confirmation({
     amountOut: string
   } | null>(null)
 
-  const confirmSwap = async () => {
+  const confirmSwap = useCallback(async () => {
     setSnapshotTrade({ amountIn, amountOut })
     try {
       setAttempTx(true)
@@ -252,7 +200,30 @@ function Confirmation({
       setAttempTx(false)
       setTxError(e)
     }
-  }
+  }, [
+    account,
+    amountIn,
+    amountOut,
+    chainId,
+    client,
+    deadline,
+    provider,
+    slippage,
+    tokenInInfo.address,
+    trade.routeSummary,
+    trade?.routerAddress,
+  ])
+
+  const triggered = useRef<boolean>(false)
+
+  useEffect(() => {
+    const isTriggered = triggered.current
+
+    if (!isTriggered) {
+      confirmSwap()
+      triggered.current = true
+    }
+  }, [confirmSwap])
 
   if (attempTx || txHash)
     return (
@@ -331,117 +302,7 @@ function Confirmation({
       </>
     )
 
-  return (
-    <>
-      <ModalHeader>
-        <ModalTitle onClick={onClose} role="button">
-          <BackIcon />
-          Confirm swap
-        </ModalTitle>
-      </ModalHeader>
-
-      <Flex>
-        <img
-          src={tokenInInfo.logoURI}
-          width="28"
-          alt=""
-          height="28"
-          onError={({ currentTarget }) => {
-            currentTarget.onerror = null // prevents looping
-            currentTarget.src = new URL('../../assets/question.svg', import.meta.url).href
-          }}
-        />
-        {+Number(amountIn).toPrecision(10)}
-        <div>{tokenInInfo.symbol}</div>
-      </Flex>
-
-      <ArrowDown />
-
-      <Flex>
-        <img
-          alt=""
-          src={tokenOutInfo.logoURI}
-          width="28"
-          height="28"
-          onError={({ currentTarget }) => {
-            currentTarget.onerror = null // prevents looping
-            currentTarget.src = new URL('../../assets/question.svg', import.meta.url).href
-          }}
-        />
-        {+Number(amountOut).toPrecision(10)}
-        <div>{tokenOutInfo.symbol}</div>
-      </Flex>
-
-      <Note>
-        Output is estimated. You will receive at least {minAmountOut} {tokenOutInfo.symbol} or the transaction will
-        revert.
-      </Note>
-
-      <Detail>
-        <DetailRow>
-          <DetailLabel>Current Price</DetailLabel>
-          <DetailRight>
-            1 {tokenInInfo.symbol} = {rate.toPrecision(6)} {tokenOutInfo.symbol}
-          </DetailRight>
-        </DetailRow>
-
-        <DetailRow>
-          <DetailLabel>
-            Minimum Received
-            <InfoHelper text={`Minimum amount you will receive or your transaction will revert`} />
-          </DetailLabel>
-          <DetailRight>
-            {minAmountOut === '--' ? minAmountOut : formatNumber(parseFloat(minAmountOut))} {tokenOutInfo.symbol}
-          </DetailRight>
-        </DetailRow>
-
-        <DetailRow>
-          <DetailLabel>
-            Gas Fee
-            <InfoHelper text="Estimated network fee for your transaction" />
-          </DetailLabel>
-          <DetailRight>${(+trade.routeSummary.gasUsd).toPrecision(4)}</DetailRight>
-        </DetailRow>
-
-        <DetailRow>
-          <DetailLabel>
-            Price Impact
-            <InfoHelper text="Estimated change in price due to the size of your transaction" />
-          </DetailLabel>
-          <DetailRight
-            style={{
-              color: priceImpact > 15 ? theme.error : priceImpact > 5 ? theme.warning : theme.text,
-            }}
-          >
-            {priceImpact === -1 ? '--' : priceImpact > 0.01 ? priceImpact.toFixed(3) + '%' : '< 0.01%'}
-          </DetailRight>
-        </DetailRow>
-
-        <DetailRow>
-          <DetailLabel>Slippage</DetailLabel>
-          <DetailRight>{(slippage * 100) / 10_000}%</DetailRight>
-        </DetailRow>
-      </Detail>
-
-      <div style={{ marginTop: 'auto' }}>
-        {priceImpact > 15 ? (
-          <PriceImpactVeryHigh>
-            <Warning /> Price Impact is Very High
-          </PriceImpactVeryHigh>
-        ) : priceImpact > 5 ? (
-          <PriceImpactHigh>
-            <Warning /> Price Impact is High
-          </PriceImpactHigh>
-        ) : priceImpact === -1 ? (
-          <PriceImpactHigh>
-            <Warning />
-            Unable to calculate Price Impact
-          </PriceImpactHigh>
-        ) : null}
-        <Button onClick={confirmSwap}>Confirm swap</Button>
-      </div>
-    </>
-  )
+  return <></>
 }
 
 export default Confirmation
