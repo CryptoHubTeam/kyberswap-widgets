@@ -14,6 +14,7 @@ import { ReactComponent as SuccessSVG } from '../../assets/success.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/error.svg'
 import { ReactComponent as Info } from '../../assets/info.svg'
 import InfoHelper from '../InfoHelper'
+import { formatNumber } from '../../utils'
 
 const Success = styled(SuccessSVG)`
   color: ${({ theme }) => theme.success};
@@ -390,7 +391,7 @@ function Confirmation({
             <InfoHelper text={`Minimum amount you will receive or your transaction will revert`} />
           </DetailLabel>
           <DetailRight>
-            {minAmountOut} {tokenOutInfo.symbol}
+            {minAmountOut === '--' ? minAmountOut : formatNumber(parseFloat(minAmountOut))} {tokenOutInfo.symbol}
           </DetailRight>
         </DetailRow>
 

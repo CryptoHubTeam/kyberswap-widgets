@@ -52,6 +52,7 @@ import Confirmation from '../Confirmation'
 import DexesSetting from '../DexesSetting'
 import ImportModal from '../ImportModal'
 import InfoHelper from '../InfoHelper'
+import { formatNumber } from '../../utils'
 
 export const DialogWrapper = styled.div`
   background-color: ${({ theme }) => theme.dialog};
@@ -517,9 +518,13 @@ const Widget = ({
           <Input
             value={inputAmout}
             onChange={e => {
-              const value = e.target.value.replace(/,/g, '.')
+              let value = e.target.value.replace(/,/g, '.')
               const inputRegex = RegExp(`^\\d*(?:\\\\[.])?\\d*$`) // match escaped "." characters via in a non-capturing group
               if (value === '' || inputRegex.test(value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))) {
+                const decimalIndex = value.indexOf('.')
+                if (decimalIndex !== -1 && value.length - decimalIndex - 1 > 18) {
+                  value = parseFloat(value).toFixed(18)
+                }
                 setInputAmount(value)
               }
             }}
@@ -779,7 +784,9 @@ const Widget = ({
             Minimum Received
             <InfoHelper text={`Minimum amount you will receive or your transaction will revert`} />
           </DetailLabel>
-          <DetailRight>{minAmountOut ? `${minAmountOut} ${tokenOutInfo?.symbol}` : '--'}</DetailRight>
+          <DetailRight>
+            {minAmountOut ? `${formatNumber(parseFloat(minAmountOut))} ${tokenOutInfo?.symbol}` : '--'}
+          </DetailRight>
         </DetailRow>
 
         <DetailRow>
