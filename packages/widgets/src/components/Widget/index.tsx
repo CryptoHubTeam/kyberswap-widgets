@@ -680,17 +680,17 @@ const Widget = ({
           </MiddleLeft>
         </MiddleRow>
         <SlippageWrapper isHidden={!isSlippageShown}>
-          <SlippageItem isActive={slippage === 5} onClick={() => setSlippageFinalValue(5)}>
-            0.05%
-          </SlippageItem>
           <SlippageItem isActive={slippage === 10} onClick={() => setSlippageFinalValue(10)}>
             0.1%
           </SlippageItem>
-          <SlippageItem isActive={slippage === 50} onClick={() => setSlippageFinalValue(50)}>
-            0.5%
-          </SlippageItem>
           <SlippageItem isActive={slippage === 100} onClick={() => setSlippageFinalValue(100)}>
             1%
+          </SlippageItem>
+          <SlippageItem isActive={slippage === 500} onClick={() => setSlippageFinalValue(500)}>
+            5%
+          </SlippageItem>
+          <SlippageItem isActive={slippage === 1000} onClick={() => setSlippageFinalValue(1000)}>
+            10%
           </SlippageItem>
           <SlippageItem
             isActive

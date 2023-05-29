@@ -153,7 +153,7 @@ const useSwap = ({
   const [loading, setLoading] = useState(false)
   const [trade, setTrade] = useState<Trade | null>(null)
   const [error, setError] = useState('')
-  const [slippage, setSlippage] = useState(50)
+  const [slippage, setSlippage] = useState(100)
   const [deadline, setDeadline] = useState(20)
 
   const controllerRef = useRef<AbortController | null>()
