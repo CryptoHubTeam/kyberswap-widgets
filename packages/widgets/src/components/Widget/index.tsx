@@ -6,7 +6,6 @@ import { ReactComponent as DropdownIcon } from '../../assets/dropdown.svg'
 import { ReactComponent as SwitchIcon } from '../../assets/switch.svg'
 import { ReactComponent as SwapIcon } from '../../assets/swap.svg'
 import { ReactComponent as BackIcon } from '../../assets/back1.svg'
-import { ReactComponent as KyberSwapLogo } from '../../assets/kyberswap.svg'
 import { ReactComponent as AlertIcon } from '../../assets/alert.svg'
 
 import useTheme from '../../hooks/useTheme'
@@ -496,10 +495,6 @@ const Widget = ({
           </ModalHeader>
         )}
         <ContentWrapper>{modalContent}</ContentWrapper>
-        <PoweredBy style={{ marginTop: '0' }}>
-          Powered By
-          <KyberSwapLogo />
-        </PoweredBy>
       </DialogWrapper>
       <Title>SWAP</Title>
       <InputWrapper style={{ marginTop: '0.5rem' }}>
@@ -812,11 +807,6 @@ const Widget = ({
           </DetailRight>
         </DetailRow>
       </Detail>
-
-      <PoweredBy>
-        Powered By
-        <KyberSwapLogo />
-      </PoweredBy>
     </Wrapper>
   )
 }
