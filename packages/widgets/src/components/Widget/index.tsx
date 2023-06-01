@@ -59,8 +59,8 @@ export const DialogWrapper = styled.div`
   position: absolute;
   left: 0;
   top: 0;
-  width: calc(100%);
-  height: calc(100%);
+  bottom: 0;
+  right: 0;
   padding: 1rem;
   overflow: hidden;
   z-index: ${ZIndex.DIALOG};
