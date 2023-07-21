@@ -251,6 +251,7 @@ const useSwap = ({
     feeAmount,
     isInBps,
     feeReceiver,
+    balances,
     chainId,
   ])
 

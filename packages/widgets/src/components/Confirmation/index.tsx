@@ -109,6 +109,7 @@ function Confirmation({
   onClose,
   deadline,
   client,
+  onTxSubmit,
 }: {
   trade: Trade
   tokenInInfo: TokenInfo
@@ -121,6 +122,7 @@ function Confirmation({
   onClose: () => void
   deadline: number
   client: string
+  onTxSubmit?: (txHash: string, data: any) => void
 }) {
   const { provider, account, chainId } = useActiveWeb3()
   const [attempTx, setAttempTx] = useState(false)
@@ -195,6 +197,7 @@ function Confirmation({
       })
 
       setTxHash(res?.hash || '')
+      onTxSubmit?.(res?.hash || '', res)
       setAttempTx(false)
     } catch (e) {
       setAttempTx(false)

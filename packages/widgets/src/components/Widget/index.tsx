@@ -253,6 +253,7 @@ export interface WidgetProps {
   defaultTokenIn?: string
   defaultTokenOut?: string
   feeSetting?: FeeSetting
+  onTxSubmit?: (txHash: string, data: any) => void
 }
 
 const Widget = ({
@@ -260,11 +261,13 @@ const Widget = ({
   defaultTokenOut,
   feeSetting,
   client,
+  onTxSubmit,
 }: {
   defaultTokenIn?: string
   defaultTokenOut?: string
   feeSetting?: FeeSetting
   client: string
+  onTxSubmit?: (txHash: string, data: any) => void
 }) => {
   const [showModal, setShowModal] = useState<ModalType | null>(null)
 
@@ -418,6 +421,7 @@ const Widget = ({
                 setShowModal(null)
                 refetch()
               }}
+              onTxSubmit={onTxSubmit}
             />
           )
         return null
@@ -819,6 +823,7 @@ export default function SwapWidget({
   defaultTokenOut,
   feeSetting,
   client,
+  onTxSubmit,
 }: WidgetProps) {
   return (
     <StrictMode>
@@ -830,6 +835,7 @@ export default function SwapWidget({
               defaultTokenOut={defaultTokenOut}
               feeSetting={feeSetting}
               client={client}
+              onTxSubmit={onTxSubmit}
             />
           </TokenListProvider>
         </Web3Provider>
