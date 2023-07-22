@@ -253,14 +253,14 @@ function Confirmation({
           </Amount>
           {!txHash && <SubText>Confirm this transaction in your wallet</SubText>}
           {txHash && txStatus === '' && <SubText>Waiting for the transaction to be mined</SubText>}
+          {txHash && (
+            <ViewTx href={`${SCAN_LINK[chainId]}/tx/${txHash}`} target="_blank" rel="noopener norefferer">
+              View transaction <External />
+            </ViewTx>
+          )}
         </Central>
 
         <Divider />
-        {txHash && (
-          <ViewTx href={`${SCAN_LINK[chainId]}/tx/${txHash}`} target="_blank" rel="noopener norefferer">
-            View transaction <External />
-          </ViewTx>
-        )}
         <Button style={{ marginTop: 0 }} onClick={onClose}>
           Close
         </Button>
@@ -291,14 +291,15 @@ function Confirmation({
           </div>
           <Divider />
           <ErrMsg>{txError?.data?.message || txError?.message}</ErrMsg>
+          {txHash && (
+            <ViewTx>
+              View transaction <External />
+            </ViewTx>
+          )}
         </div>
 
         <Divider />
-        {txHash && (
-          <ViewTx>
-            View transaction <External />
-          </ViewTx>
-        )}
+
         <Button style={{ marginTop: 0 }} onClick={onClose}>
           Close
         </Button>
