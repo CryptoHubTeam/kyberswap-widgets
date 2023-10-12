@@ -2,15 +2,18 @@ import styled, { keyframes } from 'styled-components'
 import { Trade } from '../../hooks/useSwap'
 import { Button } from '../Widget/styled'
 import { useActiveWeb3 } from '../../hooks/useWeb3Provider'
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { BigNumber } from 'ethers'
-import { AGGREGATOR_PATH, NATIVE_TOKEN_ADDRESS, SCAN_LINK, TokenInfo } from '../../constants'
+import { AGGREGATOR_PATH, NATIVE_TOKEN_ADDRESS, SCAN_LINK, TokenInfo, WRAPPED_NATIVE_TOKEN } from '../../constants'
 import { ReactComponent as BackIcon } from '../../assets/back.svg'
 import { ReactComponent as Loading } from '../../assets/loader.svg'
 import { ReactComponent as External } from '../../assets/external.svg'
 import { ReactComponent as SuccessSVG } from '../../assets/success.svg'
 import { ReactComponent as ErrorIcon } from '../../assets/error.svg'
 import { ReactComponent as Info } from '../../assets/info.svg'
+import { ReactComponent as DropdownIcon } from '../../assets/dropdown.svg'
+import { useWETHContract } from '../../hooks/useContract'
+import { friendlyError } from '../../utils/errorMessage'
 
 const Success = styled(SuccessSVG)`
   color: ${({ theme }) => theme.success};
@@ -81,13 +84,47 @@ const SubText = styled.div`
   margin-top: 12px;
 `
 
-const ErrMsg = styled.div`
+const ErrMsg = styled.div<{ show: boolean }>`
+  margin-top: ${({ show }) => (show ? '12px' : '0')};
+  max-height: ${({ show }) => (show ? '200px' : '0')};
+  transition: 0.2s ease-out;
+
   font-size: 14px;
   color: ${({ theme }) => theme.subText};
-  max-height: 200px;
   overflow-wrap: break-word;
   overflow-y: scroll;
-  padding-top: 12px;
+
+  /* width */
+  ::-webkit-scrollbar {
+    display: unset;
+    width: 6px;
+    border-radius: 999px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 999px;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.subText + '66'};
+    border-radius: 999px;
+  }
+`
+
+const ErrorDetail = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  cursor: pointer;
+`
+
+const DownIcon = styled(DropdownIcon)<{ open: boolean }>`
+  transform: rotate(${({ open }) => (!open ? '0' : '-180deg')});
+  transition: all 0.2s ease;
 `
 
 function calculateGasMargin(value: BigNumber): BigNumber {
@@ -125,10 +162,26 @@ function Confirmation({
   onTxSubmit?: (txHash: string, data: any) => void
 }) {
   const { provider, account, chainId } = useActiveWeb3()
+
+  // `minAmountOut` was used in the default return statement that have been removed
+  // let minAmountOut = '--'
+
+  const isWrap =
+    trade.routeSummary.tokenIn.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase() &&
+    trade.routeSummary.tokenOut.toLowerCase() === WRAPPED_NATIVE_TOKEN[chainId].address.toLowerCase()
+  const isUnwrap =
+    trade.routeSummary.tokenOut.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase() &&
+    trade.routeSummary.tokenIn.toLowerCase() === WRAPPED_NATIVE_TOKEN[chainId].address.toLowerCase()
+
+  // if (amountOut && !isWrap && !isUnwrap) {
+  //   minAmountOut = (Number(amountOut) * (1 - slippage / 10_000)).toPrecision(8).toString()
+  // }
+
   const [attempTx, setAttempTx] = useState(false)
   const [txHash, setTxHash] = useState('')
   const [txStatus, setTxStatus] = useState<'success' | 'failed' | ''>('')
   const [txError, setTxError] = useState<any>('')
+  const [showErrorDetail, setShowErrorDetail] = useState(false)
 
   useEffect(() => {
     if (txHash) {
@@ -153,12 +206,47 @@ function Confirmation({
     amountOut: string
   } | null>(null)
 
+  const wethContract = useWETHContract()
+
   const confirmSwap = useCallback(async () => {
     setSnapshotTrade({ amountIn, amountOut })
     try {
       setAttempTx(true)
       setTxHash('')
-      setTxError(false)
+      setTxError('')
+
+      if (isWrap) {
+        if (!wethContract) return
+        const estimateGas = await wethContract.estimateGas.deposit({
+          value: BigNumber.from(trade.routeSummary.amountIn).toHexString(),
+        })
+        const txReceipt = await wethContract.deposit({
+          value: BigNumber.from(trade.routeSummary.amountIn).toHexString(),
+          gasLimit: calculateGasMargin(estimateGas),
+        })
+
+        setTxHash(txReceipt?.hash || '')
+        onTxSubmit?.(txReceipt?.hash || '', txReceipt)
+        setAttempTx(false)
+
+        return
+      }
+
+      if (isUnwrap) {
+        if (!wethContract) return
+        const estimateGas = await wethContract.estimateGas.withdraw(
+          BigNumber.from(trade.routeSummary.amountIn).toHexString(),
+        )
+        const txReceipt = await wethContract.withdraw(BigNumber.from(trade.routeSummary.amountIn).toHexString(), {
+          gasLimit: calculateGasMargin(estimateGas),
+        })
+
+        setTxHash(txReceipt?.hash || '')
+        onTxSubmit?.(txReceipt?.hash || '', txReceipt)
+        setAttempTx(false)
+
+        return
+      }
 
       const date = new Date()
       date.setMinutes(date.getMinutes() + (deadline || 20))
@@ -210,11 +298,15 @@ function Confirmation({
     chainId,
     client,
     deadline,
+    isUnwrap,
+    isWrap,
+    onTxSubmit,
     provider,
     slippage,
     tokenInInfo.address,
     trade.routeSummary,
     trade?.routerAddress,
+    wethContract,
   ])
 
   const triggered = useRef<boolean>(false)
@@ -272,25 +364,28 @@ function Confirmation({
       <>
         <Central>
           <StyledError />
-          <WaitingText>Something went wrong</WaitingText>
+          <WaitingText>{friendlyError(txError)}</WaitingText>
         </Central>
 
         <div>
           <Divider />
-          <div
-            style={{
-              display: 'flex',
-              padding: '8px 0',
-              alignItems: 'center',
-              gap: '4px',
-              fontSize: '14px',
-            }}
-          >
-            <Info />
-            Error details
-          </div>
+          <ErrorDetail role="button" onClick={() => setShowErrorDetail(prev => !prev)}>
+            <div
+              style={{
+                display: 'flex',
+                padding: '8px 0',
+                alignItems: 'center',
+                gap: '4px',
+                fontSize: '14px',
+              }}
+            >
+              <Info />
+              Error details
+            </div>
+            <DownIcon open={showErrorDetail} />
+          </ErrorDetail>
           <Divider />
-          <ErrMsg>{txError?.data?.message || txError?.message}</ErrMsg>
+          <ErrMsg show={showErrorDetail}>{txError?.data?.message || txError?.message}</ErrMsg>
           {txHash && (
             <ViewTx>
               View transaction <External />
@@ -301,7 +396,7 @@ function Confirmation({
         <Divider />
 
         <Button style={{ marginTop: 0 }} onClick={onClose}>
-          Close
+          {txError ? 'Dismiss' : 'Close'}
         </Button>
       </>
     )

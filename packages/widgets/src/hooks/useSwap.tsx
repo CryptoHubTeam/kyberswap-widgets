@@ -1,7 +1,7 @@
 import { parseUnits } from '@ethersproject/units'
 import { BigNumber } from 'ethers'
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { AGGREGATOR_PATH, NATIVE_TOKEN_ADDRESS, SUPPORTED_NETWORKS } from '../constants'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { AGGREGATOR_PATH, NATIVE_TOKEN_ADDRESS, SUPPORTED_NETWORKS, WRAPPED_NATIVE_TOKEN } from '../constants'
 import useDebounce from './useDebounce'
 import useTokenBalances from './useTokenBalances'
 import { useTokens } from './useTokens'
@@ -50,48 +50,24 @@ export interface Dex {
   dexId: string
 }
 
-const useSwap = ({
-  defaultTokenIn,
-  defaultTokenOut,
-  feeSetting,
-}: {
-  defaultTokenIn?: string
-  defaultTokenOut?: string
-  feeSetting?: {
-    chargeFeeBy: 'currency_in' | 'currency_out'
-    feeAmount: number
-    feeReceiver: string
-    isInBps: boolean
-  }
-}) => {
-  const { provider, chainId } = useActiveWeb3()
-  const [tokenIn, setTokenIn] = useState(defaultTokenIn || NATIVE_TOKEN_ADDRESS)
-  const [tokenOut, setTokenOut] = useState(defaultTokenOut || '')
-  const tokens = useTokens()
-
+export const useDexes = (enableDexes?: string) => {
+  const enableDexesFormatted: string[] | undefined = useMemo(
+    () => (enableDexes ? enableDexes.split(',') : undefined),
+    [enableDexes],
+  )
+  const { chainId } = useActiveWeb3()
   const isUnsupported = !SUPPORTED_NETWORKS.includes(chainId.toString())
 
-  useEffect(() => {
-    if (isUnsupported) {
-      setTokenIn('')
-      setTokenOut('')
-      setTrade(null)
-    } else {
-      setTrade(null)
-      setTokenIn(defaultTokenIn || NATIVE_TOKEN_ADDRESS)
-      setTokenOut(defaultTokenOut || '')
-    }
-  }, [isUnsupported, chainId, defaultTokenIn, defaultTokenOut])
-
-  const { balances } = useTokenBalances(tokens.map(item => item.address))
   const [allDexes, setAllDexes] = useState<Dex[]>([])
   const [excludedDexes, setExcludedDexes] = useState<Dex[]>([])
-
+  const allDexesEnabled = allDexes.filter(dex =>
+    enableDexesFormatted ? enableDexesFormatted.includes(dex.dexId) : true,
+  )
   const excludedDexIds = excludedDexes.map(i => i.dexId)
   const dexes =
-    excludedDexes.length === 0
+    excludedDexes.length === 0 && !enableDexes
       ? undefined
-      : allDexes
+      : allDexesEnabled
           .filter(item => !excludedDexIds.includes(item.dexId))
           .map(item => item.dexId)
           .join(',')
@@ -102,9 +78,8 @@ const useSwap = ({
       if (isUnsupported) return
       const res = await fetch(
         `https://ks-setting.kyberswap.com/api/v1/dexes?chain=${AGGREGATOR_PATH[chainId]}&isEnabled=true&pageSize=100`,
-      )
-        .then(res => res.json())
-        .catch(() => setError('Unable found dex pair'))
+      ).then(res => res.json())
+      // .catch(() => setError('Unable to find dex pair')) // TODO: if this is important, set and return an error
 
       let dexes: Dex[] = res?.data?.dexes || []
       const ksElastic = dexes.find(dex => dex.dexId === 'kyberswap-elastic')
@@ -145,7 +120,53 @@ const useSwap = ({
     }
 
     fetchAllDexes()
-  }, [isUnsupported, chainId])
+  }, [isUnsupported, chainId, enableDexesFormatted])
+
+  return [allDexesEnabled, dexes, excludedDexes, setExcludedDexes] as const
+}
+
+const useSwap = ({
+  defaultTokenIn,
+  defaultTokenOut,
+  feeSetting,
+  enableDexes,
+}: {
+  defaultTokenIn?: string
+  defaultTokenOut?: string
+  feeSetting?: {
+    chargeFeeBy: 'currency_in' | 'currency_out'
+    feeAmount: number
+    feeReceiver: string
+    isInBps: boolean
+  }
+  enableDexes?: string
+}) => {
+  const { provider, chainId } = useActiveWeb3()
+  const [tokenIn, setTokenIn] = useState(defaultTokenIn || NATIVE_TOKEN_ADDRESS)
+  const [tokenOut, setTokenOut] = useState(defaultTokenOut || '')
+  const tokens = useTokens()
+
+  const isUnsupported = !SUPPORTED_NETWORKS.includes(chainId.toString())
+
+  const isWrap =
+    tokenIn === NATIVE_TOKEN_ADDRESS && tokenOut.toLowerCase() === WRAPPED_NATIVE_TOKEN[chainId].address.toLowerCase()
+  const isUnwrap =
+    tokenOut === NATIVE_TOKEN_ADDRESS && tokenIn.toLowerCase() === WRAPPED_NATIVE_TOKEN[chainId].address.toLowerCase()
+
+  useEffect(() => {
+    if (isUnsupported) {
+      setTokenIn('')
+      setTokenOut('')
+      setTrade(null)
+    } else {
+      setTrade(null)
+      setTokenIn(defaultTokenIn || NATIVE_TOKEN_ADDRESS)
+      setTokenOut(defaultTokenOut || '')
+    }
+  }, [isUnsupported, chainId, defaultTokenIn, defaultTokenOut])
+
+  const { balances } = useTokenBalances(tokens.map(item => item.address))
+  const [allDexes, dexes, excludedDexes, setExcludedDexes] = useDexes(enableDexes)
 
   const [inputAmout, setInputAmount] = useState('1')
   const debouncedInput = useDebounce(inputAmout)
@@ -153,7 +174,7 @@ const useSwap = ({
   const [loading, setLoading] = useState(false)
   const [trade, setTrade] = useState<Trade | null>(null)
   const [error, setError] = useState('')
-  const [slippage, setSlippage] = useState(100)
+  const [slippage, setSlippage] = useState(50)
   const [deadline, setDeadline] = useState(20)
 
   const controllerRef = useRef<AbortController | null>()
@@ -164,7 +185,9 @@ const useSwap = ({
     if (isUnsupported) return
 
     const tokenInDecimal =
-      tokenIn === NATIVE_TOKEN_ADDRESS ? 18 : tokens.find(token => token.address === tokenIn)?.decimals
+      tokenIn === NATIVE_TOKEN_ADDRESS
+        ? 18
+        : tokens.find(token => token.address.toLowerCase() === tokenIn.toLowerCase())?.decimals
 
     if (!tokenInDecimal || !tokenIn || !tokenOut || !debouncedInput) {
       setError('Invalid input')
@@ -172,7 +195,14 @@ const useSwap = ({
       return
     }
 
-    const amountIn = parseUnits(debouncedInput, tokenInDecimal)
+    let amountIn: BigNumber = BigNumber.from('0')
+    try {
+      amountIn = parseUnits(debouncedInput, tokenInDecimal)
+    } catch (e) {
+      setError('Invalid input amount')
+      setTrade(null)
+      return
+    }
 
     if (!amountIn) {
       setError('Invalid input amount')
@@ -188,6 +218,31 @@ const useSwap = ({
 
     if (!provider) {
       setError('Please connect your wallet')
+    }
+
+    if (isWrap || isUnwrap) {
+      setTrade({
+        routerAddress: WRAPPED_NATIVE_TOKEN[chainId].address,
+        routeSummary: {
+          tokenIn,
+          amountIn: amountIn.toString(),
+          amountInUsd: '',
+          tokenOut,
+          amountOut: amountIn.toString(),
+          amountOutUsd: '',
+          gas: '',
+          gasPrice: '',
+          gasUsd: '',
+          extraFee: {
+            feeAmount: '',
+            chargeFeeBy: '',
+            isInBps: '',
+            feeReceiver: '',
+          },
+          route: [] as any,
+        },
+      })
+      return
     }
 
     const params: { [key: string]: string | number | boolean | undefined } = {
@@ -223,10 +278,10 @@ const useSwap = ({
       },
     )
       .then(r => r.json())
-      .catch(() => setError('Unable to found trade route'))
+      .catch(() => setError('Unable to find trade route'))
 
     if (!routeResponse?.data?.routeSummary) {
-      setError('Unable to found trade route')
+      setError('Unable to find trade route')
     }
 
     if (Number(routeResponse?.data?.routeSummary?.amountOut)) {
@@ -239,20 +294,24 @@ const useSwap = ({
 
     controllerRef.current = null
     setLoading(false)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, [
-    isUnsupported,
+    tokens,
     tokenIn,
     tokenOut,
-    debouncedInput,
+    isWrap,
+    isUnwrap,
     provider,
+    debouncedInput,
     dexes,
+    isUnsupported,
+    chainId,
     chargeFeeBy,
     feeAmount,
     isInBps,
     feeReceiver,
-    balances,
-    chainId,
+    // eslint-disable-next-line
+    JSON.stringify(balances),
   ])
 
   useEffect(() => {
@@ -278,6 +337,8 @@ const useSwap = ({
     excludedDexes,
     setExcludedDexes,
     setTrade,
+    isWrap,
+    isUnwrap,
   }
 }
 

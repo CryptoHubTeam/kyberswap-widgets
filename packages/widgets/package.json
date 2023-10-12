@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "lint": "eslint --max-warnings=0 src"
+    "lint": "eslint --max-warnings=0 src",
+    "prepublishOnly": "yarn && yarn build"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.6",
