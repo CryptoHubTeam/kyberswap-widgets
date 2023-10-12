@@ -1,10 +1,11 @@
 import ReactDOM from 'react-dom/client'
 import Widget from './components/Widget'
 
-import { init, useWallets, useConnectWallet } from '@web3-onboard/react'
+import { init, useConnectWallet, useWallets } from '@web3-onboard/react'
 import injectedModule from '@web3-onboard/injected-wallets'
 import { ethers } from 'ethers'
 import { useEffect, useState } from 'react'
+import { darkTheme } from './theme'
 
 const injected = injectedModule()
 
@@ -89,6 +90,10 @@ const App = () => {
     1313161554: '0x4988a896b1227218e4a686fde5eabdcabd91571f',
     42262: '0x6Cb9750a92643382e020eA9a170AbB83Df05F30B',
     10: '0x94b008aA00579c1307B0EF2c499aD98a8ce58e58',
+    59144: '0xa219439258ca9da29e9cc4ce5596924745e12b93',
+    1101: '0x1e4a5963abfd975d8c9021ce480b42188849d41d',
+    324: '0x493257fd37edb34451f62edf8d2a0c418852ba4c',
+    8453: '0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA',
   }
 
   // feeSetting={{
@@ -108,6 +113,8 @@ const App = () => {
         onTxSubmit={(hash, data) => {
           console.log(hash, data)
         }}
+        enableRoute
+        theme={darkTheme}
       />
       <h1>Vite + React</h1>
       <div className="card">

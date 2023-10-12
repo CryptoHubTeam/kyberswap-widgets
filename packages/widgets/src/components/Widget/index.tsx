@@ -7,34 +7,36 @@ import { ReactComponent as SwitchIcon } from '../../assets/switch.svg'
 import { ReactComponent as SwapIcon } from '../../assets/swap.svg'
 import { ReactComponent as BackIcon } from '../../assets/back1.svg'
 import { ReactComponent as AlertIcon } from '../../assets/alert.svg'
+import { ReactComponent as Expand } from '../../assets/expand.svg'
 
 import useTheme from '../../hooks/useTheme'
 
 import {
   AccountBalance,
   BalanceRow,
+  Button,
+  Detail,
+  DetailLabel,
+  DetailRight,
+  DetailRow,
+  DetailTitle,
+  Divider,
+  Dots,
   Input,
   InputRow,
   InputWrapper,
   MaxHalfBtn,
+  MiddleLeft,
   MiddleRow,
+  ModalHeader,
+  ModalTitle,
+  Rate,
   SelectTokenBtn,
   SettingBtn,
   SwitchBtn,
   Title,
+  ViewRouteTitle,
   Wrapper,
-  Button,
-  Dots,
-  Rate,
-  MiddleLeft,
-  Detail,
-  DetailTitle,
-  Divider,
-  DetailRow,
-  DetailLabel,
-  DetailRight,
-  ModalHeader,
-  ModalTitle,
 } from './styled'
 
 import { BigNumber } from 'ethers'
@@ -52,6 +54,7 @@ import DexesSetting from '../DexesSetting'
 import ImportModal from '../ImportModal'
 import InfoHelper from '../InfoHelper'
 import { formatNumber } from '../../utils'
+import TradeRouting from '../TradeRouting'
 
 export const DialogWrapper = styled.div`
   background-color: ${({ theme }) => theme.dialog};
@@ -81,6 +84,11 @@ export const DialogWrapper = styled.div`
   &.close {
     transform: translateX(100%);
   }
+`
+const Row = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 `
 
 const ContentWrapper = styled.div`
@@ -177,6 +185,7 @@ enum ModalType {
   CONFIRMATION = 'confirmation',
   DEXES_SETTING = 'dexes_setting',
   IMPORT_TOKEN = 'import_token',
+  TRADE_ROUTE = 'trade_route',
 }
 
 interface FeeSetting {
@@ -247,6 +256,7 @@ const validateSlippageInput = (str: string): { isValid: boolean; message?: strin
 
 export interface WidgetProps {
   client: string
+  enableRoute?: boolean
   provider?: any
   tokenList?: TokenInfo[]
   theme?: Theme
@@ -254,6 +264,7 @@ export interface WidgetProps {
   defaultTokenOut?: string
   feeSetting?: FeeSetting
   onTxSubmit?: (txHash: string, data: any) => void
+  enableDexes?: string
 }
 
 const Widget = ({
@@ -262,17 +273,19 @@ const Widget = ({
   feeSetting,
   client,
   onTxSubmit,
+  enableRoute,
+  enableDexes,
 }: {
   defaultTokenIn?: string
   defaultTokenOut?: string
   feeSetting?: FeeSetting
   client: string
   onTxSubmit?: (txHash: string, data: any) => void
+  enableRoute: boolean
+  enableDexes?: string
 }) => {
   const [showModal, setShowModal] = useState<ModalType | null>(null)
-
   const { chainId } = useActiveWeb3()
-
   const isUnsupported = !SUPPORTED_NETWORKS.includes(chainId.toString())
 
   const wrappedTokens: { [chainId: number]: string } = {
@@ -317,10 +330,13 @@ const Widget = ({
     excludedDexes,
     setExcludedDexes,
     setTrade,
+    isWrap,
+    isUnwrap,
   } = useSwap({
     defaultTokenIn,
     defaultTokenOut,
     feeSetting,
+    enableDexes,
   })
 
   const trade = isUnsupported ? null : routeTrade
@@ -330,19 +346,29 @@ const Widget = ({
   const { balances, refetch } = useTokenBalances(tokens.map(item => item.address))
 
   const tokenInInfo =
-    tokenIn === NATIVE_TOKEN_ADDRESS ? NATIVE_TOKEN[chainId] : tokens.find(item => item.address === tokenIn)
+    tokenIn === NATIVE_TOKEN_ADDRESS
+      ? NATIVE_TOKEN[chainId]
+      : tokens.find(item => item.address.toLowerCase() === tokenIn.toLowerCase())
 
   const tokenOutInfo =
-    tokenOut === NATIVE_TOKEN_ADDRESS ? NATIVE_TOKEN[chainId] : tokens.find(item => item.address === tokenOut)
+    tokenOut === NATIVE_TOKEN_ADDRESS
+      ? NATIVE_TOKEN[chainId]
+      : tokens.find(item => item.address.toLowerCase() === tokenOut.toLowerCase())
 
-  const amountOut = trade?.routeSummary?.amountOut
-    ? formatUnits(trade.routeSummary.amountOut, tokenOutInfo?.decimals).toString()
-    : ''
+  const amountOut =
+    isWrap || isUnwrap
+      ? inputAmout
+      : trade?.routeSummary?.amountOut
+      ? formatUnits(trade.routeSummary.amountOut, tokenOutInfo?.decimals).toString()
+      : ''
 
   let minAmountOut = ''
 
   if (amountOut) {
-    minAmountOut = (Number(amountOut) * (1 - slippage / 10_000)).toPrecision(8).toString()
+    minAmountOut =
+      isWrap || isUnwrap
+        ? parseFloat((+amountOut).toPrecision(8)).toString()
+        : (Number(amountOut) * (1 - slippage / 10_000)).toPrecision(8).toString()
   }
 
   const tokenInBalance = balances[tokenIn] || BigNumber.from(0)
@@ -352,9 +378,11 @@ const Widget = ({
   const tokenOutWithUnit = formatUnits(tokenOutBalance, tokenOutInfo?.decimals || 18)
 
   const rate =
-    trade?.routeSummary?.amountIn &&
-    trade?.routeSummary?.amountOut &&
-    parseFloat(formatUnits(trade.routeSummary.amountOut, tokenOutInfo?.decimals || 18)) / parseFloat(inputAmout)
+    isWrap || isUnwrap
+      ? 1
+      : trade?.routeSummary?.amountIn &&
+        trade?.routeSummary?.amountOut &&
+        parseFloat(formatUnits(trade.routeSummary.amountOut, tokenOutInfo?.decimals || 18)) / parseFloat(inputAmout)
 
   const formattedTokenInBalance = parseFloat(parseFloat(tokenInWithUnit).toPrecision(10))
 
@@ -364,13 +392,34 @@ const Widget = ({
 
   const priceImpact = !trade?.routeSummary.amountOutUsd
     ? -1
-    : (+trade.routeSummary.amountInUsd - +trade.routeSummary.amountOutUsd * 100) / +trade.routeSummary.amountInUsd
+    : ((+trade.routeSummary.amountInUsd - +trade.routeSummary.amountOutUsd) * 100) / +trade.routeSummary.amountInUsd
+
+  const modalTitle = (() => {
+    switch (showModal) {
+      case ModalType.CURRENCY_IN:
+        return 'Select a token'
+      case ModalType.CURRENCY_OUT:
+        return 'Select a token'
+      case ModalType.DEXES_SETTING:
+        return 'Liquidity Sources'
+      case ModalType.IMPORT_TOKEN:
+        return 'Import Token'
+      case ModalType.TRADE_ROUTE:
+        return 'Your Trade Route'
+
+      default:
+        return null
+    }
+  })()
 
   const [tokenToImport, setTokenToImport] = useState<TokenInfo | null>(null)
   const [importType, setImportType] = useState<'in' | 'out'>('in')
 
   const modalContent = (() => {
     switch (showModal) {
+      case ModalType.TRADE_ROUTE:
+        if (enableRoute) return <TradeRouting trade={trade} currencyIn={tokenInInfo} currencyOut={tokenOutInfo} />
+        return null
       case ModalType.CURRENCY_IN:
         return (
           <SelectCurrency
@@ -465,22 +514,6 @@ const Widget = ({
   const { isValid, message } = validateSlippageInput(slippageValue)
 
   const [isSlippageShown, setSlippageShown] = useState(false)
-
-  const modalTitle = (() => {
-    switch (showModal) {
-      case ModalType.CURRENCY_IN:
-        return 'Select a token'
-      case ModalType.CURRENCY_OUT:
-        return 'Select a token'
-      case ModalType.DEXES_SETTING:
-        return 'Liquidity Sources'
-      case ModalType.IMPORT_TOKEN:
-        return 'Import Token'
-
-      default:
-        return null
-    }
-  })()
 
   const setSlippageFinalValue = (slippage: number) => {
     setSlippage(slippage)
@@ -624,7 +657,7 @@ const Widget = ({
         </BalanceRow>
 
         <InputRow>
-          <Input disabled value={+Number(amountOut).toPrecision(8)} />
+          <Input disabled value={isWrap || isUnwrap ? +amountOut : (+amountOut).toPrecision(8)} />
 
           {!!trade?.routeSummary?.amountOutUsd && (
             <span
@@ -748,7 +781,7 @@ const Widget = ({
       <Button
         disabled={!!error || loading || checkingAllowance || approvalState === APPROVAL_STATE.PENDING || isUnsupported}
         onClick={async () => {
-          if (approvalState === APPROVAL_STATE.NOT_APPROVED) {
+          if (approvalState === APPROVAL_STATE.NOT_APPROVED && !isWrap && !isUnwrap) {
             approve()
           } else {
             setShowModal(ModalType.CONFIRMATION)
@@ -764,6 +797,10 @@ const Widget = ({
           <Dots>Calculate best route</Dots>
         ) : error ? (
           error
+        ) : isWrap ? (
+          'Wrap'
+        ) : isUnwrap ? (
+          'Unwrap'
         ) : checkingAllowance ? (
           <Dots>Checking Allowance</Dots>
         ) : approvalState === APPROVAL_STATE.NOT_APPROVED ? (
@@ -776,7 +813,14 @@ const Widget = ({
       </Button>
 
       <Detail style={{ marginTop: '1rem' }}>
-        <DetailTitle>More information</DetailTitle>
+        <Row>
+          <DetailTitle>More information</DetailTitle>
+          {enableRoute && !(isWrap || isUnwrap) && (
+            <ViewRouteTitle onClick={() => setShowModal(ModalType.TRADE_ROUTE)}>
+              View Routes <Expand style={{ width: 12, height: 12 }} />
+            </ViewRouteTitle>
+          )}
+        </Row>
         <Divider />
         <DetailRow>
           <DetailLabel>
@@ -824,6 +868,8 @@ export default function SwapWidget({
   feeSetting,
   client,
   onTxSubmit,
+  enableRoute = true,
+  enableDexes,
 }: WidgetProps) {
   return (
     <StrictMode>
@@ -836,6 +882,8 @@ export default function SwapWidget({
               feeSetting={feeSetting}
               client={client}
               onTxSubmit={onTxSubmit}
+              enableRoute={enableRoute}
+              enableDexes={enableDexes}
             />
           </TokenListProvider>
         </Web3Provider>

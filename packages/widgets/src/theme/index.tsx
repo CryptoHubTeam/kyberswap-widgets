@@ -16,3 +16,21 @@ export const defaultTheme = {
   boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.04)',
 }
 export type Theme = typeof defaultTheme
+
+export const darkTheme = {
+  text: '#FFFFFF',
+  subText: '#A9A9A9',
+  primary: '#1C1C1C',
+  dialog: '#313131',
+  secondary: '#0F0F0F',
+  interactive: '#292929',
+  stroke: '#505050',
+  accent: '#28E0B9',
+  success: '#189470',
+  warning: '#FF9901',
+  error: '#F84242',
+  fontFamily: 'Work Sans',
+  borderRadius: '10px',
+  buttonRadius: '10px',
+  boxShadow: '0px 4px 4px rgba(0, 0, 0, 0.04)',
+}

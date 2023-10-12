@@ -110,6 +110,8 @@ function App() {
   };
 
   const [theme, setTheme] = useState<any>(darkTheme);
+  const [enableRoute, setEnableRoute] = useState<boolean>(true);
+  const [enableDexes, setEnableDexes] = useState<string>("");
 
   const defaultTokenOut: { [chainId: number]: string } = {
     1: "0xdeFA4e8a7bcBA345F687a2f1456F5Edd9CE97202",
@@ -124,6 +126,10 @@ function App() {
     1313161554: "0x4988a896b1227218e4a686fde5eabdcabd91571f",
     42262: "0x6Cb9750a92643382e020eA9a170AbB83Df05F30B",
     10: "0x94b008aA00579c1307B0EF2c499aD98a8ce58e58",
+    59144: "0xa219439258ca9da29e9cc4ce5596924745e12b93",
+    1101: "0x1e4a5963abfd975d8c9021ce480b42188849d41d",
+    324: "0x493257fd37edb34451f62edf8d2a0c418852ba4c",
+    8453: "0xd9aAEc86B65D86f6A7B5B1b0c42FFA531710b6CA",
   };
 
   const [feeSetting, setFeeSetting] = useState({
@@ -257,8 +263,62 @@ function App() {
           />
           <label htmlFor="isInBps">isInBps</label>
         </div>
-      </div>
 
+        <p className="title">Trade route</p>
+        <div
+          style={{
+            display: "flex",
+            gap: "16px",
+            justifyContent: "center",
+          }}
+        >
+          <div>
+            <label>
+              <input
+                type="radio"
+                name="traderoute"
+                onChange={(e) => {
+                  setEnableRoute(true);
+                }}
+                checked={enableRoute}
+              />
+              Enable
+            </label>
+          </div>
+          <div>
+            <label>
+              <input
+                type="radio"
+                name="traderoute"
+                onChange={(e) => {
+                  setEnableRoute(false);
+                }}
+                checked={!enableRoute}
+              />
+              Disable
+            </label>
+          </div>
+        </div>
+        <p className="title">Enable dexes</p>
+        <div
+          style={{
+            display: "flex",
+            gap: "16px",
+            justifyContent: "center",
+          }}
+        >
+          <label>
+            Enable Dexes{" "}
+            <input
+              type="text"
+              onChange={(e) => {
+                setEnableDexes(e.target.value);
+              }}
+              checked={!enableRoute}
+            />
+          </label>
+        </div>
+      </div>
       <Widget
         client="widget-react-demo"
         theme={theme}
@@ -270,6 +330,8 @@ function App() {
             ? feeSetting
             : undefined
         }
+        enableRoute={enableRoute}
+        enableDexes={enableDexes}
       />
     </div>
   );
