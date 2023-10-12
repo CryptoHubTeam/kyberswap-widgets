@@ -7,7 +7,6 @@ import { ReactComponent as SwitchIcon } from '../../assets/switch.svg'
 import { ReactComponent as SwapIcon } from '../../assets/swap.svg'
 import { ReactComponent as BackIcon } from '../../assets/back1.svg'
 import { ReactComponent as AlertIcon } from '../../assets/alert.svg'
-import { ReactComponent as Expand } from '../../assets/expand.svg'
 
 import useTheme from '../../hooks/useTheme'
 
@@ -35,7 +34,6 @@ import {
   SettingBtn,
   SwitchBtn,
   Title,
-  ViewRouteTitle,
   Wrapper,
 } from './styled'
 
@@ -54,7 +52,6 @@ import DexesSetting from '../DexesSetting'
 import ImportModal from '../ImportModal'
 import InfoHelper from '../InfoHelper'
 import { formatNumber } from '../../utils'
-import TradeRouting from '../TradeRouting'
 
 export const DialogWrapper = styled.div`
   background-color: ${({ theme }) => theme.dialog};
@@ -85,11 +82,11 @@ export const DialogWrapper = styled.div`
     transform: translateX(100%);
   }
 `
-const Row = styled.div`
+/*const Row = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-`
+`*/
 
 const ContentWrapper = styled.div`
   flex: 1;
@@ -185,7 +182,7 @@ enum ModalType {
   CONFIRMATION = 'confirmation',
   DEXES_SETTING = 'dexes_setting',
   IMPORT_TOKEN = 'import_token',
-  TRADE_ROUTE = 'trade_route',
+  // TRADE_ROUTE = 'trade_route',
 }
 
 interface FeeSetting {
@@ -404,8 +401,8 @@ const Widget = ({
         return 'Liquidity Sources'
       case ModalType.IMPORT_TOKEN:
         return 'Import Token'
-      case ModalType.TRADE_ROUTE:
-        return 'Your Trade Route'
+      /*case ModalType.TRADE_ROUTE:
+        return 'Your Trade Route'*/
 
       default:
         return null
@@ -417,9 +414,9 @@ const Widget = ({
 
   const modalContent = (() => {
     switch (showModal) {
-      case ModalType.TRADE_ROUTE:
+      /*case ModalType.TRADE_ROUTE:
         if (enableRoute) return <TradeRouting trade={trade} currencyIn={tokenInInfo} currencyOut={tokenOutInfo} />
-        return null
+        return null*/
       case ModalType.CURRENCY_IN:
         return (
           <SelectCurrency
@@ -813,14 +810,14 @@ const Widget = ({
       </Button>
 
       <Detail style={{ marginTop: '1rem' }}>
-        <Row>
-          <DetailTitle>More information</DetailTitle>
-          {enableRoute && !(isWrap || isUnwrap) && (
+        {/*<Row>*/}
+        <DetailTitle>More information</DetailTitle>
+        {/*{enableRoute && !(isWrap || isUnwrap) && (
             <ViewRouteTitle onClick={() => setShowModal(ModalType.TRADE_ROUTE)}>
               View Routes <Expand style={{ width: 12, height: 12 }} />
             </ViewRouteTitle>
-          )}
-        </Row>
+          )}*/}
+        {/*</Row>*/}
         <Divider />
         <DetailRow>
           <DetailLabel>

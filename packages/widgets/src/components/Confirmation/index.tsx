@@ -2,7 +2,7 @@ import styled, { keyframes } from 'styled-components'
 import { Trade } from '../../hooks/useSwap'
 import { Button } from '../Widget/styled'
 import { useActiveWeb3 } from '../../hooks/useWeb3Provider'
-import { useEffect, useRef, useState, useCallback } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { BigNumber } from 'ethers'
 import { AGGREGATOR_PATH, NATIVE_TOKEN_ADDRESS, SCAN_LINK, TokenInfo, WRAPPED_NATIVE_TOKEN } from '../../constants'
 import { ReactComponent as BackIcon } from '../../assets/back.svg'
@@ -163,7 +163,8 @@ function Confirmation({
 }) {
   const { provider, account, chainId } = useActiveWeb3()
 
-  let minAmountOut = '--'
+  // `minAmountOut` was used in the default return statement that have been removed
+  // let minAmountOut = '--'
 
   const isWrap =
     trade.routeSummary.tokenIn.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase() &&
@@ -172,9 +173,9 @@ function Confirmation({
     trade.routeSummary.tokenOut.toLowerCase() === NATIVE_TOKEN_ADDRESS.toLowerCase() &&
     trade.routeSummary.tokenIn.toLowerCase() === WRAPPED_NATIVE_TOKEN[chainId].address.toLowerCase()
 
-  if (amountOut && !isWrap && !isUnwrap) {
-    minAmountOut = (Number(amountOut) * (1 - slippage / 10_000)).toPrecision(8).toString()
-  }
+  // if (amountOut && !isWrap && !isUnwrap) {
+  //   minAmountOut = (Number(amountOut) * (1 - slippage / 10_000)).toPrecision(8).toString()
+  // }
 
   const [attempTx, setAttempTx] = useState(false)
   const [txHash, setTxHash] = useState('')
@@ -297,11 +298,15 @@ function Confirmation({
     chainId,
     client,
     deadline,
+    isUnwrap,
+    isWrap,
+    onTxSubmit,
     provider,
     slippage,
     tokenInInfo.address,
     trade.routeSummary,
     trade?.routerAddress,
+    wethContract,
   ])
 
   const triggered = useRef<boolean>(false)

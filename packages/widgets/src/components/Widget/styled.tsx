@@ -226,7 +226,7 @@ export const DetailTitle = styled.div`
   text-transform: uppercase;
   text-align: left;
 `
-export const ViewRouteTitle = styled.div`
+/*export const ViewRouteTitle = styled.div`
   font-size: 12px;
   font-weight: 400;
   line-height: 16px;
@@ -235,7 +235,7 @@ export const ViewRouteTitle = styled.div`
   display: flex;
   align-items: center;
   gap: 4px;
-`
+`*/
 export const Divider = styled.div`
   width: 100%;
   height: 1px;
